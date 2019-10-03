@@ -1,6 +1,7 @@
 ---
 
-- name: Playbook
+- name: Initialise common roles
   hosts: all
-  tasks:
-    - ping:
+  become: yes
+  roles:
+    - docker
