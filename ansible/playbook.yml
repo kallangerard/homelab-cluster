@@ -1,3 +1,6 @@
 ---
-tasks:
-  - ping:
+
+- name: Playbook
+  hosts: all
+  tasks:
+    - ping:
