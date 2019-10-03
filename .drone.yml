@@ -3,22 +3,38 @@ kind: pipeline
 name: default
 
 steps:
-  # - name: copy homeassistant config
-  #   image: alpine:latest
-  #   commands:
-  #     - cp -r ./homeassistant/* /homeassistant/
-  #   volumes:
-  #     - name: homeassistant
-  #       path: /homeassistant
-
-  # - name: docker-compose deploy
-  #   image: tmaier/docker-compose:17
+  # - name: check ansible syntax
+  #   image: plugins/ansible:1
   #   environment:
-  #     AMCREST_PASSWORD:
-  #       from_secret: amcrest_password
-  #     COMPOSE_HTTP_TIMEOUT: 200
-
-
+  #     additional_var:
+  #       from_secret: additional_var
+  #     another_var: foo
+  #   settings:
+  #     playbook: ansible/playbook.yml
+  #     galaxy: ansible/requirements.yml
+  #     inventory: ansible/inventory
+  #     syntax_check: true
+  #   when:
+  #     event:
+  #     - pull_request
+  
+  - name: apply ansible playbook
+    image: plugins/ansible:1
+    environment:
+      # additional_var:
+      #   from_secret: additional_var
+      # another_var: foo
+    settings:
+      playbook: ansible/playbook.yml
+      # galaxy: ansible/requirements.yml
+      inventory: ansible/inventory.yml
+      private_key:
+        from_secret: ANSIBLE_PRIVATE_KEY
+    when:
+      event:
+      - push
+      - tag
+  
   - name: notify finished
     image: appleboy/drone-discord:1.0.0
     when:

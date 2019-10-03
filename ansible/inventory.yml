@@ -9,3 +9,4 @@ production:
         moss:
   vars:
     # Vars for production go here
+    ansible_user: node
