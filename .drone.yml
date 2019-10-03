@@ -1,0 +1,39 @@
+ 
+kind: pipeline
+name: default
+
+steps:
+  # - name: copy homeassistant config
+  #   image: alpine:latest
+  #   commands:
+  #     - cp -r ./homeassistant/* /homeassistant/
+  #   volumes:
+  #     - name: homeassistant
+  #       path: /homeassistant
+
+  # - name: docker-compose deploy
+  #   image: tmaier/docker-compose:17
+  #   environment:
+  #     AMCREST_PASSWORD:
+  #       from_secret: amcrest_password
+  #     COMPOSE_HTTP_TIMEOUT: 200
+
+
+  - name: notify finished
+    image: appleboy/drone-discord:1.0.0
+    when:
+      status:
+        - success
+        - failure
+    settings:
+      webhook_id:
+        from_secret: DISCORD_WEBHOOK_ID
+      webhook_token:
+        from_secret: DISCORD_WEBHOOK_TOKEN
+      message: |
+        Build {{ build.status }} {{ build.link }}
+
+volumes:
+  - name: dockerSock
+    host:
+      path: /var/run/docker.sock

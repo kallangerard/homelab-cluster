@@ -1,0 +1,11 @@
+production:
+  children:
+    masters:
+      hosts:
+        charles:
+    workers:
+      hosts:
+        kingston:
+        moss:
+  vars:
+    # Vars for production go here
