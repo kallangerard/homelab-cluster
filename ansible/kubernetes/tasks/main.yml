@@ -1,5 +1,5 @@
 ---
 # tasks file for kubernetes
 
-- name: Install Kubernetes
+- name: Disable Swap for Kubernetes
   include: swap.yml
