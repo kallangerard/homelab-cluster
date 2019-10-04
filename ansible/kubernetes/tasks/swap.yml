@@ -2,11 +2,11 @@
 
 - name: Disable SWAP for Kubernetes
   shell: swapoff -a
-  when: kubernetes_installed is changed
+  when: kubernetes_installed is defined
 
 - name: Disable SWAP in fstab
   replace:
     path: /etc/fstab
     regexp: '^(.+?\sswap\s+sw\s+.*)$' # matches any line that contains swap sw
     replace: '# \1'
-  when: kubernetes_installed is changed
+  when: kubernetes_installed is defined
