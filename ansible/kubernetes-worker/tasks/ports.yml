@@ -4,10 +4,10 @@
 - name: Open worker node ports
   ufw:
     rule: allow
-    direction: incoming
+    direction: in
     to_port: "{{ item }}"
     proto: tcp
   loop:
-    - 10250 # Kubelet API
-    - 30000:32767 # NodePort Services
+    - "10250" # Kubelet API
+    - "30000:32767" # NodePort Services
   notify: restart ufw
