@@ -13,7 +13,7 @@
 
 - name: Disable incoming traffic
   ufw:
-    direction: incoming
+    direction: in
     default: reject
     state: enabled
   notify: restart ufw
