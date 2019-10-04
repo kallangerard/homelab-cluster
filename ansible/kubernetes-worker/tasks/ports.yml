@@ -2,7 +2,6 @@
 # Open ports for use by kubernetes worker nodes
 
 - name: Open worker node ports
-  hosts: workers
   ufw:
     rule: allow
     direction: incoming

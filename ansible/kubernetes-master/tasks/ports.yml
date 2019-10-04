@@ -2,7 +2,6 @@
 # Open ports for use by kubernetes
 
 - name: Open control-plane (master) node ports
-  hosts: masters
   ufw:
     rule: allow
     direction: incoming
