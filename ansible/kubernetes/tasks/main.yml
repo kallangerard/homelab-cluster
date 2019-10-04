@@ -3,3 +3,6 @@
 
 - name: Disable Swap for Kubernetes
   include: swap.yml
+
+- name: Open ports needed for Kubernetes
+  include: swap.yml
