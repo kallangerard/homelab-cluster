@@ -1,0 +1,10 @@
+---
+
+- name: Disable SWAP for Kubernetes
+  shell: swapoff -a
+
+- name: Disable SWAP in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^(.+?\sswap\s+sw\s+.*)$' # matches any line that contains swap sw
+    replace: '# \1'

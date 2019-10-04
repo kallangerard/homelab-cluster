@@ -1,0 +1,7 @@
+---
+# handlers file for homelab-cluster
+
+- name: restart ufw
+  service: 
+    name: ufw
+    state: restarted

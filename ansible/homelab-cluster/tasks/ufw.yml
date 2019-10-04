@@ -1,0 +1,19 @@
+---
+
+- name: Enable outgoing traffic
+  ufw:
+    direction: outgoing
+    default: allow
+  notify: restart ufw
+
+- name: Allow ssh access
+  ufw:
+    name: OpenSSH
+    rule: allow
+
+- name: Disable incoming traffic
+  ufw:
+    direction: incoming
+    default: reject
+    state: enabled
+  notify: restart ufw

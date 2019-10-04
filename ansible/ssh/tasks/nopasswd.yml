@@ -11,12 +11,3 @@
         group: root
         mode: "0440"
         validate: /usr/sbin/visudo -cf %s
-    # - name: grant Node user passwordless sudo
-    #   lineinfile:
-    #     path: /etc/sudoers.d/node
-    #     state: present
-    #     create: yes
-    #     line: "node ALL=(ALL) NOPASSWD: ALL"
-    #     regexp: "^node ALL="
-    #     validate: /usr/sbin/visudo -cf %s
-    #     mode: "0440"

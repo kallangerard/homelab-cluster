@@ -1,0 +1,4 @@
+---
+# tasks file for homelab-cluster
+include:
+  - ufw

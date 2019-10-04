@@ -1,7 +1,15 @@
 ---
-
 - name: Initialise common roles
   hosts: all
   become: yes
   roles:
     - docker
+    - kubernetes
+    - homelab-cluster
+
+# TODO Kubernetes
+# Open Ports
+# Ensure iptables tooling does not use the nftables backend
+# kubeadm: the command to bootstrap the cluster.
+# kubelet: the component that runs on all of the machines in your cluster and does things like starting pods and containers.
+# kubectl: the command line util to talk to your cluster.
