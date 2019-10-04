@@ -1,4 +1,5 @@
 ---
 # tasks file for homelab-cluster
-include:
-  - ufw
+- name: Configure Firewall
+  include:
+    - ufw

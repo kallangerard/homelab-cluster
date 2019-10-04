@@ -1,4 +1,5 @@
 ---
 # tasks file for ssh
-include:
-  - nopasswd.yml
+- name: Configure SSH
+  include:
+    - nopasswd.yml
