@@ -1,0 +1,14 @@
+{
+  "name": "rmshelper",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "extensions": [
+    "ms-python.python"
+  ],
+  "runArgs": [
+    "-v",
+    "${env:HOME}${env:USERPROFILE}/.ssh/:/root/.ssh/",
+    "-e",
+    "ANSIBLE_CONFIG=/workspaces/${workspaceFolderBasename}/ansible.cfg"
+  ]
+}

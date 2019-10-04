@@ -1,0 +1,6 @@
+---
+- hosts: nodes
+  roles:
+    - role: dev-sec.ssh-hardening
+  vars:
+    ssh_server_hardening: false
