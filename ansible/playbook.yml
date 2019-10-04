@@ -6,7 +6,6 @@
     - docker
     - kubernetes
     - homelab-cluster
-
 # TODO Kubernetes
 # Open Ports
 # Ensure iptables tooling does not use the nftables backend
