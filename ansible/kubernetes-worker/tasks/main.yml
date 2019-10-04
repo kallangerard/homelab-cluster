@@ -1,0 +1,5 @@
+---
+# tasks file for kubernetes
+
+- name: Open ports needed for Kubernetes
+  include: ports.yml

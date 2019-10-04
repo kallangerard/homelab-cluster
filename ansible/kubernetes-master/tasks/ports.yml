@@ -1,7 +1,7 @@
 ---
 # Open ports for use by kubernetes
 
-- name: Open control-plane node ports
+- name: Open control-plane (master) node ports
   hosts: masters
   ufw:
     rule: allow
@@ -14,16 +14,4 @@
     - 10250 # Kubelet API
     - 10251 # kube-scheduler
     - 10252 # kube-controller-manager
-  notify: restart ufw
-
-- name: Open worker node ports
-  hosts: workers
-  ufw:
-    rule: allow
-    direction: incoming
-    to_port: "{{ item }}"
-    proto: tcp
-  loop:
-    - 10250 # Kubelet API
-    - 30000:32767 # NodePort Services
   notify: restart ufw
