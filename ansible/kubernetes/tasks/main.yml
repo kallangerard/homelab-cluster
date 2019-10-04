@@ -2,5 +2,4 @@
 # tasks file for kubernetes
 
 - name: Install Kubernetes
-  include:
-    - swap.yml
+  include: swap.yml
