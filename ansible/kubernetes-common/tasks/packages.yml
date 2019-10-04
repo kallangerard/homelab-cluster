@@ -1,0 +1,39 @@
+---
+
+- name: Install required system packages
+  apt: 
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop: 
+    - apt-transport-https
+    - curl
+
+- name: Add Kubernetes GPG apt Key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add Kubernetes Repository
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+
+- name: Update apt and install kubeadm, kubelet and kubectl
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Prevent kubeadm, kubelet and kubectl from being upgraded
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl

@@ -1,6 +1,10 @@
 ---
 # tasks file for kubernetes
 
+- name: Install packages for kubernetes
+  include: packages.yml
+  register: kubernetes_installed
+
 - name: Disable Swap for Kubernetes
   include: swap.yml
   when: kubernetes_installed is defined
