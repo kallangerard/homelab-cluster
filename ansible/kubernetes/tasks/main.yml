@@ -5,4 +5,4 @@
   include: swap.yml
 
 - name: Open ports needed for Kubernetes
-  include: swap.yml
+  include: ports.yml
