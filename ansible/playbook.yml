@@ -1,4 +1,11 @@
 ---
+- name: Initialise common roles
+  hosts: all
+  become: yes
+  roles:
+    - docker
+    - homelab-cluster
+    - kubernetes-common
 
 - name: Initialise master nodes
   hosts: masters
@@ -11,14 +18,6 @@
   become: yes
   roles:
     - kubernetes-worker
-
-- name: Initialise common roles
-  hosts: all
-  become: yes
-  roles:
-    - docker
-    - kubernetes-common
-    - homelab-cluster
     
 # TODO Kubernetes
 #master
