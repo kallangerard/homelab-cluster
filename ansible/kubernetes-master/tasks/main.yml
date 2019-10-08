@@ -23,7 +23,7 @@
 
 - name: Copy Calico yml template
   template:
-    src: /templates/calico/v{{ calico_version }}/manifests/calico.yml
+    src: templates/calico/v{{ calico_version }}/manifests/calico.yml
     dest: ~/calico.yml
 
 
