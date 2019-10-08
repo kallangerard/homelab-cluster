@@ -4,7 +4,13 @@
 - name: Open ports needed for Kubernetes
   include: ports.yml
 
-- name: kubeadm init
+- name: Check cluster state
+  # Thanks MonadicT
+  command: kubeadm token list
+  register: kubernetes_init
+  ignore_errors: true
+
+- name: Initialise Cluster if doesn't exist
   command: 
     argv:
       - kubeadm
@@ -12,8 +18,9 @@
       - --pod-network-cidr {{ pod_network_cidr }}
       - --apiserver-advertise-address={{ apiserver_advertise_address | default(inventory_hostname) }}
   register: kubernetes_init
-  failed_when: false
-  when: not kubernetes_init.stat.exists
+  # failed_when: false
+  when: kubernetes_init.rc > 0
+
 # TODO Kubernetes
 #master
 
