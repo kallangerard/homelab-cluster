@@ -3,3 +3,24 @@
 
 - name: Open ports needed for Kubernetes
   include: ports.yml
+
+- name: kubeadm init
+  command: 
+    argv:
+      - kubeadm
+      - init
+      - --pod-network-cidr {{ pod_network_cidr }}
+      - --apiserver-advertise-address={{ apiserver_advertise_address | default(inventory_hostname) }}
+  register: kubernetes_init
+  failed_when: false
+  when: not kubernetes_init.stat.exists
+# TODO Kubernetes
+#master
+
+
+# template from /templates/calico/v{{ calico_version }}/manifests/calico.yml
+# to {{ temp }}/calico.yml
+
+# command: {{ temp }}/calico.yaml
+
+# kubectl taint nodes --all node-role.kubernetes.io/master-

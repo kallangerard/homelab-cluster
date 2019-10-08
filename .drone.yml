@@ -6,8 +6,8 @@ steps:
   - name: apply ansible playbook
     image: plugins/ansible:1
     environment:
-      cluster_cidr:
-        from_secret: cluster_cidr
+      POD_NETWORK_CIDR:
+        from_secret: POD_NETWORK_CIDR
     settings:
       playbook: ansible/playbook.yml
       # galaxy: ansible/requirements.yml

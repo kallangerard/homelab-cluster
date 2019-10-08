@@ -10,4 +10,4 @@ production:
   vars:
     # Vars for production go here
     ansible_user: node
-    cluster_cidr: {{ lookup ('env', 'cluster_cidr') }}
+    pod_network_cidr: "{{ lookup ('env', 'POD_NETWORK_CIDR') }}"
