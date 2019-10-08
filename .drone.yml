@@ -5,6 +5,9 @@ name: default
 steps:
   - name: apply ansible playbook
     image: plugins/ansible:1
+    environment:
+      cluster_cidr:
+        from_secret: cluster_cidr
     settings:
       playbook: ansible/playbook.yml
       # galaxy: ansible/requirements.yml
