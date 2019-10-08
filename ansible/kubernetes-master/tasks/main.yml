@@ -23,9 +23,9 @@
 
 - name: Copy Calico yml template
   template:
-    src: templates/calico/v{{ calico_version }}/manifests/calico.yml.j2
+    src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
     dest: ~/calico.yml
-    
+
 # command: {{ temp }}/calico.yaml
 
 # kubectl taint nodes --all node-role.kubernetes.io/master-
