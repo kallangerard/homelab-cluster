@@ -16,7 +16,7 @@
       - kubeadm
       - init
       - --pod-network-cidr={{ pod_network_cidr }}
-      - --apiserver-advertise-address={{ apiserver_advertise_address | default(inventory_hostname) }}
+      - --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) }}
   register: kubernetes_init
   # failed_when: false
   when: kubernetes_init.rc > 0
