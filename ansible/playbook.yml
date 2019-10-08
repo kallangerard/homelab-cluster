@@ -21,6 +21,26 @@
     - homelab-cluster
     
 # TODO Kubernetes
-# kubeadm: the command to bootstrap the cluster.
-# kubelet: the component that runs on all of the machines in your cluster and does things like starting pods and containers.
-# kubectl: the command line util to talk to your cluster.
+#master
+# ---
+
+# kubeadm init --pod-network-cidr {{ cluster_cidr }} #"10.200.0.0/16"
+
+# template from /templates/calico/v{{ calico_version }}/manifests/calico.yml
+# to {{ temp }}/calico.yml
+
+# command: {{ temp }}/calico.yaml
+
+# kubectl taint nodes --all node-role.kubernetes.io/master-
+
+# workers
+# ---
+
+# kubeadm token create
+# ^ register token ^
+
+# openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | \
+#    openssl dgst -sha256 -hex | sed 's/^.* //'
+# ^ register ca-cert-hash ^
+
+# kubeadm join --token <token> <control-plane-host>:<control-plane-port> --discovery-token-ca-cert-hash sha256:<hash>
