@@ -21,8 +21,10 @@
   # failed_when: false
   when: kubernetes_init.rc > 0
 
-# TODO Kubernetes
-#master
+- name: Copy Calico yml template
+  template:
+    src: /templates/calico/v{{ calico_version }}/manifests/calico.yml
+    dest: ~/calico.yml
 
 
 # template from /templates/calico/v{{ calico_version }}/manifests/calico.yml
