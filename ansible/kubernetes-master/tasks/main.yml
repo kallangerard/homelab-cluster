@@ -15,7 +15,7 @@
     argv:
       - kubeadm
       - init
-      - --pod-network-cidr 10.200.0.0/16
+      - --pod-network-cidr={{ pod_network_cidr }}
       - --apiserver-advertise-address={{ apiserver_advertise_address | default(inventory_hostname) }}
   register: kubernetes_init
   # failed_when: false

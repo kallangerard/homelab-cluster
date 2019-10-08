@@ -1,4 +1,3 @@
- 
 kind: pipeline
 name: default
 
@@ -16,9 +15,9 @@ steps:
         from_secret: ANSIBLE_PRIVATE_KEY
     when:
       event:
-      - push
-      - tag
-  
+        - push
+        - tag
+
   - name: notify finished
     image: appleboy/drone-discord:1.0.0
     when:
