@@ -10,5 +10,5 @@ production:
   vars:
     # Vars for production go here
     ansible_user: node
-    pod_network_cidr: "10.200.0.0/16"
+    # pod_network_cidr: 10.200.0.0/16
     calico_version: 3.8
