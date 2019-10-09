@@ -3,3 +3,39 @@
 
 - name: Open ports needed for Kubernetes
   include: ports.yml
+
+# - name: Check if kubelet.conf exists
+#   stat:
+#     path: "/etc/kubernetes/kubelet.conf"
+#   register: kubelet_conf
+
+# - name: Join to cluster if needed
+#   include_tasks: join.yml
+#   when: not kubelet_conf.stat.exists
+
+# - name: Enable and check kubelet service
+#   systemd:
+#     name: kubelet
+#     daemon_reload: yes
+#     state: started
+#     enabled: yes
+
+# - name: Reset Kubernetes component
+#   shell: "kubeadm reset --force"
+#   register: reset_cluster
+
+# - name: Join to Kubernetes cluster
+#   when: reset_cluster is succeeded
+#   shell: |
+#     kubeadm join --token {{ token }} \
+#                 --discovery-token-unsafe-skip-ca-verification \
+#                 {{ master_ip }}:6443
+#   register: join_cluster
+#   notify:
+#     - Recreate kube-dns
+
+# - name: Recreate kube-dns
+#   command: kubectl --kubeconfig=.kube.confoi -n kube-system delete pods -l k8s-app=kube-dns
+#   delegate_to: "{{ groups['masters'][0] }}"
+#   run_once: true
+#   ignore_errors: true
