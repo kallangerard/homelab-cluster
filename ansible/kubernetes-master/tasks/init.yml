@@ -1,13 +1,13 @@
 ---
 
-- name: Initialise Cluster if doesn't exist
-  command: 
-    argv:
-      - kubeadm
-      - init
-      - --pod-network-cidr={{ pod_network_cidr }}
-      - --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) }}
-  register: init_cluster
+# - name: Initialise Cluster if doesn't exist
+#   command: 
+#     argv:
+#       - kubeadm
+#       - init
+#       - --pod-network-cidr={{ pod_network_cidr }}
+#       - --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) }}
+#   register: init_cluster
 
 - name: Create Kubernetes config directory
   file:
