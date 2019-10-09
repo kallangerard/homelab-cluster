@@ -11,8 +11,19 @@
 
 - name: Init cluster if needed
   include_tasks: init.yml
-  # when: not kubeadm_ca.stat.exists
+  when: not kubeadm_ca.stat.exists
   run_once: yes
+
+- name: Deploy kubernetes dashboard into cluster
+  command: |
+    kubectl --kubeconfig=.kube/config \
+        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 5
+  delay: 5
+  ignore_errors: true
+  when: dashboard
 
 - name: Copy Calico yml template
   template:
@@ -26,7 +37,5 @@
     state: started
     enabled: yes
   register: started_kubelet
-
-# command: {{ temp }}/calico.yaml
 
 # kubectl taint nodes --all node-role.kubernetes.io/master-

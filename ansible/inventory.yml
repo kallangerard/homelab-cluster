@@ -12,3 +12,4 @@ production:
     ansible_user: node
     pod_network_cidr: "{{ lookup ('env', 'POD_NETWORK_CIDR') }}"
     calico_version: 3.8
+    dashboard: yes
