@@ -1,0 +1,36 @@
+---
+
+- name: Initialise Cluster if doesn't exist
+  command: 
+    argv:
+      - kubeadm
+      - init
+      - --pod-network-cidr={{ pod_network_cidr }}
+      - --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) }}
+  register: init_cluster
+
+- name: Create Kubernetes config directory
+  file:
+    path: ".kube/"
+    state: directory
+
+- name: Copy admin.conf to Home Directory
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: ".kube/config"
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
+    mode: 0755
+    remote_src: true
+  when: init_cluster is succeeded
+
+- name: Deploy kubernetes dashboard into cluster
+  when: init_cluster is succeeded and enable_dashboard
+  command: |
+    kubectl --kubeconfig=.kube/config \
+        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 5
+  delay: 5
+  ignore_errors: true

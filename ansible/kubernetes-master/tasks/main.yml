@@ -5,26 +5,27 @@
   include: ports.yml
 
 - name: Check cluster state
-  # Thanks MonadicT
-  command: kubeadm token list
-  register: kubernetes_init
-  ignore_errors: true
+  stat:
+    path: "/etc/kubernetes/pki/ca.key"
+  register: kubeadm_ca
 
-- name: Initialise Cluster if doesn't exist
-  command: 
-    argv:
-      - kubeadm
-      - init
-      - --pod-network-cidr={{ pod_network_cidr }}
-      - --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) }}
-  register: kubernetes_init
-  # failed_when: false
-  when: kubernetes_init.rc > 0
+- name: Init cluster if needed
+  include_tasks: init.yml
+  when: not kubeadm_ca.stat.exists
+  run_once: yes
 
 - name: Copy Calico yml template
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
     dest: ~/calico.yml
+
+- name: Enable and check kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: started
+    enabled: yes
+  register: started_kubelet
 
 # command: {{ temp }}/calico.yaml
 
