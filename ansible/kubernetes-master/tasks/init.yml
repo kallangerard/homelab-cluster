@@ -22,7 +22,7 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0755
     remote_src: true
-  when: init_cluster is succeeded
+  # when: init_cluster is succeeded
 
 - name: Deploy kubernetes dashboard into cluster
   when: init_cluster is succeeded and enable_dashboard
