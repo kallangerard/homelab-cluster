@@ -32,7 +32,7 @@
 
 - name: Apply Calico template
   command: kubectl apply -f calico.yaml
-  hosts: group_name[0]
+  # hosts: group_name[0]
   
 - name: Enable and check kubelet service
   systemd:
