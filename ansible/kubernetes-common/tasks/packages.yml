@@ -19,20 +19,20 @@
     repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
     state: present
 
-- name: Update apt and install kubeadm, kubelet and kubectl
-  apt:
-    update_cache: yes
+- name: Prevent kubeadm, kubelet and kubectl from being upgraded
+  dpkg_selections:
     name: "{{ item }}"
-    state: latest
+    selection: hold
   loop:
     - kubelet
     - kubeadm
     - kubectl
 
-- name: Prevent kubeadm, kubelet and kubectl from being upgraded
-  dpkg_selections:
+- name: Update apt and install kubeadm, kubelet and kubectl
+  apt:
+    update_cache: yes
     name: "{{ item }}"
-    selection: hold
+    state: latest
   loop:
     - kubelet
     - kubeadm
