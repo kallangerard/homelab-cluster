@@ -32,7 +32,7 @@
   apt:
     update_cache: yes
     name: "{{ item }}"
-    state: latest
+    # state: latest
   loop:
     - kubelet
     - kubeadm
