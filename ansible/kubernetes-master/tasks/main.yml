@@ -32,10 +32,10 @@
 - name: Copy Calico yml template
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
-    dest: ~/calico.yaml
+    dest: /etc/calico.yaml
 
 - name: Apply Calico template
-  command: kubectl apply -f ~/calico.yaml
+  command: kubectl apply -f /etc/calico.yaml
 
   # hosts: group_name[0]
 - name: Enable and check kubelet service
