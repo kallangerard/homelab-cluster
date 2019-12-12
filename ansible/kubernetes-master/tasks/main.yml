@@ -9,6 +9,10 @@
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
+- name: Reset cluster
+  include_tasks: reset.yml
+  when: reset
+
 - name: Init cluster if needed
   include_tasks: init.yml
   when: not kubeadm_ca.stat.exists
@@ -32,8 +36,8 @@
 
 - name: Apply Calico template
   command: kubectl apply -f ~/calico.yaml
+
   # hosts: group_name[0]
-  
 - name: Enable and check kubelet service
   systemd:
     name: kubelet
@@ -41,5 +45,4 @@
     state: started
     enabled: yes
   register: started_kubelet
-
 # kubectl taint nodes --all node-role.kubernetes.io/master-
