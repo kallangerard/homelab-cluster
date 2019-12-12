@@ -15,7 +15,7 @@
 
 - name: Init cluster if needed
   include_tasks: init.yml
-  when: not kubeadm_ca.stat.exists
+  when: not kubeadm_ca.stat.exists or reset_cluster is succeeded
   run_once: yes
 
 - name: Deploy kubernetes dashboard into cluster
