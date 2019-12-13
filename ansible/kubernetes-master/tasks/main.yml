@@ -33,6 +33,7 @@
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
     dest: /etc/calico.yaml
+    mode: "0555"
 
 - name: Apply Calico template
   command: kubectl apply -f /etc/calico.yaml
