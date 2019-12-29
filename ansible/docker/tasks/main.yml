@@ -1,17 +1,19 @@
 ---
 - name: Install aptitude using apt
+  become: yes
   apt:
     name: aptitude
     state: latest
     update_cache: yes
-    force_apt_get: yes 
+    force_apt_get: yes
 
 - name: Install required system packages
-  apt: 
+  become: yes
+  apt:
     name: "{{ item }}"
     state: latest
     update_cache: yes
-  loop: 
+  loop:
     - apt-transport-https
     - ca-certificates
     - curl
@@ -21,16 +23,19 @@
     - virtualenv
 
 - name: Add Docker GPG apt Key
+  become: yes
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add Docker Repository
+  become: yes
   apt_repository:
     repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
     state: present
 
 - name: Remove old versions of docker
+  become: yes
   apt:
     name: "{{ item }}"
     state: absent
@@ -42,10 +47,12 @@
     - runc
 
 - name: Update cache
+  become: yes
   apt:
     update_cache: yes
 
 - name: Install docker-ce
+  become: yes
   apt:
     name: "{{ item }}"
     state: latest

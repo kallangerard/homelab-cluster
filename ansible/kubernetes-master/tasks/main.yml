@@ -18,24 +18,18 @@
   when: not kubeadm_ca.stat.exists or reset_cluster is succeeded
   run_once: yes
 
-- name: Deploy kubernetes dashboard into cluster
-  command: |
-    kubectl --kubeconfig=.kube/config \
-        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
-  register: create_result
-  until: create_result.rc == 0
-  retries: 5
-  delay: 5
-  ignore_errors: true
-  when: dashboard
+
 
 - name: Copy Calico yml template
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
-    dest: /etc/calico.yaml
+    dest: "./calico.yaml"
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
+    mode: 0755
 
 - name: Apply Calico template
-  command: kubectl apply -f /etc/calico.yaml
+  command: kubectl apply -f ./calico.yaml
 
   # hosts: group_name[0]
 - name: Enable and check kubelet service
