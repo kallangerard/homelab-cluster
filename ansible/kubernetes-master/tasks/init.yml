@@ -1,7 +1,7 @@
 ---
-
 - name: Initialise Cluster if doesn't exist
-  command: 
+  become: yes
+  command:
     argv:
       - kubeadm
       - init

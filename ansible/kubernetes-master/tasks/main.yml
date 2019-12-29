@@ -18,8 +18,6 @@
   when: not kubeadm_ca.stat.exists or reset_cluster is succeeded
   run_once: yes
 
-
-
 - name: Copy Calico yml template
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2
