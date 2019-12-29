@@ -2,8 +2,8 @@
 # tasks file for kubernetes
 
 - name: Open ports needed for Kubernetes
+  become: yes
   include: ports.yml
-
 # - name: Check if kubelet.conf exists
 #   stat:
 #     path: "/etc/kubernetes/kubelet.conf"
