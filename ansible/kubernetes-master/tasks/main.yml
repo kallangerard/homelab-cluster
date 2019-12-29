@@ -31,6 +31,7 @@
 
   # hosts: group_name[0]
 - name: Enable and check kubelet service
+  become: yes
   systemd:
     name: kubelet
     daemon_reload: yes
