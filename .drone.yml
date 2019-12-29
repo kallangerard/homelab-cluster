@@ -11,6 +11,7 @@ steps:
       playbook: ansible/playbook.yml
       # galaxy: ansible/requirements.yml
       inventory: ansible/inventory.yml
+      verbosity: 2
       private_key:
         from_secret: ANSIBLE_PRIVATE_KEY
     when:
