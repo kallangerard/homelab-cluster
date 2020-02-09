@@ -42,6 +42,8 @@ RUN apt-get update \
     # Python
     && apt-get install -y libssl-dev libffi-dev python-dev python-pip \
     # Ansible
+    && apt-get install -y software-properties-common \
+    && apt-add-repository --yes --update ppa:ansible/ansible \
     && apt-get install -y ansible \
     # Clean up
     && apt-get autoremove -y \

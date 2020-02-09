@@ -10,6 +10,7 @@ production:
   vars:
     # Vars for production go here
     ansible_user: node
+    ansible_python_interpreter: /usr/bin/python3
     pod_network_cidr: "{{ lookup ('env', 'POD_NETWORK_CIDR') }}"
     calico_version: "3.10"
     dashboard: yes
