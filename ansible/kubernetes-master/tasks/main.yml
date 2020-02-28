@@ -4,18 +4,18 @@
 - name: Open ports needed for Kubernetes
   include: ports.yml
 
+- name: Reset cluster
+  include_tasks: reset.yml
+  when: reset
+
 - name: Check cluster state
   stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
-- name: Reset cluster
-  include_tasks: reset.yml
-  when: reset
-
 - name: Init cluster if needed
   include_tasks: init.yml
-  when: not kubeadm_ca.stat.exists or reset_cluster is succeeded
+  when: not kubeadm_ca.stat.exists
   run_once: yes
 
 - name: Copy Calico yml template
@@ -38,4 +38,9 @@
     state: started
     enabled: yes
   register: started_kubelet
+
+- name: Generate kubeadm join command
+  become: yes
+  command: kubeadm token create --print-join-command --ttl 10m
+  register: kubeadm_join_command
 # kubectl taint nodes --all node-role.kubernetes.io/master-

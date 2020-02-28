@@ -1,4 +1,6 @@
 ---
+# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.yml playbook.yml
+
 - name: Initialise common roles
   hosts: all
   roles:
