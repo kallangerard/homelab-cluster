@@ -6,7 +6,7 @@
   // Use 'settings' to set *default* container specific settings.json values on container create.
   // You can edit these settings after create using File > Preferences > Settings > Remote.
   "settings": {
-    "ansible.customOptions": "-i ./ansible/inventory.yml -vvv",
+    "ansible.customOptions": "-i ./ansible/inventory.yml",
     "terminal.integrated.shell.linux": "/bin/bash"
   },
   // Use 'appPort' to create a container with published ports. If the port isn't working, be sure
@@ -16,16 +16,11 @@
   // "postCreateCommand": "uname -a",
   // Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-in-docker for details.
   // "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-  "mounts": [
-    "source=ssh,target=/root/.ssh,type=volume"
-  ],
+  "mounts": ["source=ssh,target=/root/.ssh,type=volume"],
   // Uncomment the next line if you will use a ptrace-based debugger like C++, Go, and Rust
   // "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
   //  Pass the .env file as an env-file
-  "runArgs": [
-    "--env-file",
-    "${localWorkspaceFolder}/.devcontainer/.env"
-  ],
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env"],
   // Uncomment the next line to have VS Code connect as an existing non-root user in the container.
   // On Linux, by default, the container user's UID/GID will be updated to match your local user. See
   // https://aka.ms/vscode-remote/containers/non-root for details on adding a non-root user if none exist.
@@ -33,5 +28,5 @@
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=homelab-cluster,target=/workspace,type=volume",
   // Add the IDs of extensions you want installed when the container is created in the array below.
-  "extensions": []
+  "extensions": ["esbenp.prettier-vscode", "vscoss.vscode-ansible"]
 }
