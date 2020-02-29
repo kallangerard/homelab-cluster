@@ -2,16 +2,17 @@ production:
   children:
     masters:
       hosts:
-        charles:
+        charles.kallan.xyz:
     workers:
       hosts:
-        kingston:
-        moss:
+        kingston.kallan.xyz:
+        moss.kallan.xyz:
   vars:
     # Vars for production go here
     ansible_user: node
     ansible_python_interpreter: /usr/bin/python3
-    pod_network_cidr: "{{ lookup ('env', 'POD_NETWORK_CIDR') }}"
+    domain: kallan.xyz
+    pod_network_cidr: "10.200.0.0/16"
     calico_version: "3.10"
     dashboard: yes
     reset: no
