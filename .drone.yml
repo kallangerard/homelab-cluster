@@ -2,22 +2,19 @@ kind: pipeline
 name: default
 
 steps:
-  - name: apply ansible playbook
-    image: plugins/ansible:1
-    environment:
-      POD_NETWORK_CIDR:
-        from_secret: POD_NETWORK_CIDR
-    settings:
-      playbook: ansible/playbook.yml
-      # galaxy: ansible/requirements.yml
-      inventory: ansible/inventory.yml
-      verbosity: 3
-      private_key:
-        from_secret: ANSIBLE_PRIVATE_KEY
-    when:
-      event:
-        - push
-        - tag
+  # - name: apply ansible playbook
+  #   image: plugins/ansible:1
+  #   environment:
+  #   settings:
+  #     playbook: ansible/playbook.yml
+  #     inventory: ansible/inventory.yml
+  #     verbosity: 3
+  #     private_key:
+  #       from_secret: ANSIBLE_PRIVATE_KEY
+  #   when:
+  #     event:
+  #       - push
+  #       - tag
 
   - name: notify finished
     image: appleboy/drone-discord:1.0.0
