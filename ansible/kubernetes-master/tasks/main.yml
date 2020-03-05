@@ -41,6 +41,6 @@
 
 - name: Generate kubeadm join command
   become: yes
-  command: kubeadm token create --print-join-command --ttl 10m
+  command: kubeadm token create --print-join-command --ttl 60m
   register: kubeadm_join_command
 # kubectl taint nodes --all node-role.kubernetes.io/master-

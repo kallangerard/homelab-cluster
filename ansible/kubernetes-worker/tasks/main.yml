@@ -13,9 +13,7 @@
 - name: Join to cluster if needed
   become: yes
   command: "{{ hostvars[groups['masters'][0]]['kubeadm_join_command']['stdout'] }}"
-  # [On Master] kubeadm token create --print-join-command --ttl 10m
   when: not kubelet_conf.stat.exists
-
 # - name: Enable and check kubelet service
 #   systemd:
 #     name: kubelet
@@ -26,16 +24,6 @@
 # - name: Reset Kubernetes component
 #   shell: "kubeadm reset --force"
 #   register: reset_cluster
-
-# - name: Join to Kubernetes cluster
-#   when: reset_cluster is succeeded
-#   shell: |
-#     kubeadm join --token {{ token }} \
-#                 --discovery-token-unsafe-skip-ca-verification \
-#                 {{ master_ip }}:6443
-#   register: join_cluster
-#   notify:
-#     - Recreate kube-dns
 
 # - name: Recreate kube-dns
 #   command: kubectl --kubeconfig=.kube.confoi -n kube-system delete pods -l k8s-app=kube-dns

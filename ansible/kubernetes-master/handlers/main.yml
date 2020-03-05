@@ -1,6 +1,6 @@
 ---
 # handlers file for kubernetes
 - name: restart ufw
-  service: 
+  service:
     name: ufw
     state: restarted

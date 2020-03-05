@@ -6,7 +6,7 @@
   // Use 'settings' to set *default* container specific settings.json values on container create.
   // You can edit these settings after create using File > Preferences > Settings > Remote.
   "settings": {
-    "ansible.customOptions": "-i ./ansible/inventory.yml -vvv",
+    "ansible.customOptions": "-i ./ansible/inventory.yml",
     "terminal.integrated.shell.linux": "/bin/bash"
   },
   // Use 'appPort' to create a container with published ports. If the port isn't working, be sure
@@ -28,5 +28,5 @@
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=homelab-cluster,target=/workspace,type=volume",
   // Add the IDs of extensions you want installed when the container is created in the array below.
-  "extensions": []
+  "extensions": ["esbenp.prettier-vscode", "vscoss.vscode-ansible"]
 }
