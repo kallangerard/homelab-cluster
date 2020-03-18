@@ -106,3 +106,4 @@ inventory.yml
 
 # ansible
 .retry
+.kube/config
