@@ -2,25 +2,25 @@ all:
   children:
     production:
       children:
-        masters:
+        production_masters:
           hosts:
             charles.kallan.xyz:
-        workers:
+        production_workers:
           hosts:
             kingston.kallan.xyz:
             moss.kallan.xyz:
     development:
       children:
-        dev_masters:
+        development_masters:
           hosts:
             test-ubuntu-1.kallan.xyz:
-              ansible_host: "192.168.2.84"
-        dev_workers:
+              # ansible_host: "192.168.2.84"
+        development_workers:
           hosts:
             test-ubuntu-2.kallan.xyz:
-              ansible_host: "192.168.2.85"
+              # ansible_host: "192.168.2.85"
             test-ubuntu-3.kallan.xyz:
-              ansible_host: "192.168.2.86"
+              # ansible_host: "192.168.2.86"
   vars:
     # Vars for production go here
     ansible_user: node

@@ -39,12 +39,21 @@ RUN sed -i 's|http://archive.ubuntu|http://au.archive.ubuntu|g' /etc/apt/sources
 # Packages for this repository
 
 RUN apt-get update \
+    # Kubernetes
+    && apt-get install -y apt-transport-https \
     # Python
     && apt-get install -y libssl-dev libffi-dev python-dev python-pip \
-    # Ansible
+    # Kubernetes Repository
+    && curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+    && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list \
+    # Ansible Repository
     && apt-get install -y software-properties-common \
     && apt-add-repository --yes --update ppa:ansible/ansible \
+    # Update after Repositories
+    && apt-get update \
     && apt-get install -y ansible \
+    # Kubectl
+    && apt-get install -y kubectl \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \

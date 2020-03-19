@@ -12,7 +12,7 @@
 
 - name: Join to cluster if needed
   become: yes
-  command: "{{ hostvars[groups['masters'][0]]['kubeadm_join_command']['stdout'] }}"
+  command: "{{ hostvars[groups[lookup('env', 'STAGE') | lower | default('development', true)][0]]['kubeadm_join_command']['stdout'] }}"
   when: not kubelet_conf.stat.exists
 # - name: Enable and check kubelet service
 #   systemd:

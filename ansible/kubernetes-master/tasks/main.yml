@@ -18,6 +18,31 @@
   when: not kubeadm_ca.stat.exists
   run_once: yes
 
+# - name: Deploy kubernetes dashboard into cluster
+#   command: |
+#     kubectl --kubeconfig=.kube/config \
+#         apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+#   register: create_result
+#   until: create_result.rc == 0
+#   retries: 5
+#   delay: 5
+#   ignore_errors: true
+#   when: dashboard
+
+- name: Deploy kubernetes dashboard into cluster
+  k8s:
+    state: present
+    src: https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+  when: dashboard
+#   command: |
+#     kubectl --kubeconfig=.kube/config \
+#         apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+#   register: create_result
+#   until: create_result.rc == 0
+#   retries: 5
+#   delay: 5
+#   ignore_errors: true
+
 - name: Copy Calico yml template
   template:
     src: templates/calico/v{{ calico_version }}/manifests/calico.yaml.j2

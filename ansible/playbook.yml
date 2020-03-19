@@ -2,22 +2,22 @@
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.yml playbook.yml
 
 - name: Initialise common roles
-  hosts: all
+  hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}'
   roles:
-    - docker
+    - ssh
     - homelab-cluster
+    - docker
     - kubernetes-common
 
 - name: Initialise master nodes
-  hosts: masters
+  hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}_masters'
   roles:
     - kubernetes-master
 
 - name: Initialise worker nodes
-  hosts: workers
+  hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}_workers'
   roles:
     - kubernetes-worker
-    
 # TODO Kubernetes
 #master
 # ---
