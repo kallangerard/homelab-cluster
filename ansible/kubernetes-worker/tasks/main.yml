@@ -5,6 +5,18 @@
   become: yes
   include: ports.yml
 
+- name: Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  become: yes
+  register: reset_cluster
+  when: reset | bool
+
+- name: Remove kubelet.conf
+  file:
+    path: "/etc/kubernetes/kubelet.conf"
+    state: absent
+  when: reset | bool
+
 - name: Check if kubelet.conf exists
   stat:
     path: "/etc/kubernetes/kubelet.conf"
@@ -14,6 +26,10 @@
   become: yes
   command: "{{ hostvars[groups[lookup('env', 'STAGE') | lower | default('development', true)][0]]['kubeadm_join_command']['stdout'] }}"
   when: not kubelet_conf.stat.exists
+  register: joined_cluster
+
+- debug:
+    var: joined_cluster
 # - name: Enable and check kubelet service
 #   systemd:
 #     name: kubelet
@@ -21,9 +37,6 @@
 #     state: started
 #     enabled: yes
 
-# - name: Reset Kubernetes component
-#   shell: "kubeadm reset --force"
-#   register: reset_cluster
 
 # - name: Recreate kube-dns
 #   command: kubectl --kubeconfig=.kube.confoi -n kube-system delete pods -l k8s-app=kube-dns

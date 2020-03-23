@@ -18,6 +18,11 @@
   hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}_workers'
   roles:
     - kubernetes-worker
+
+- name: Install Ingress Controller
+  hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}_masters'
+  roles:
+    - kubernetes-services
 # TODO Kubernetes
 #master
 # ---
