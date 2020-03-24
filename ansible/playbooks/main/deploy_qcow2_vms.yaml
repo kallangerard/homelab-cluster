@@ -1,0 +1,78 @@
+---
+- hosts: proxmox_servers
+  gather_facts: False
+  tasks:
+    - name: Get resource pools
+      shell: pvesh ls /pools
+      register: pvesh_pools
+
+    - name: Creating a resource pool.
+      shell: pvesh create /pools -poolid "{{ k8s_resource_pool }}" --Comment "Kubernetes Cluster"
+      when: pvesh_pools.stdout.find(k8s_resource_pool) == -1
+      run_once: yes
+
+    - name: Downloading the Debian qcow2 image.
+      get_url:
+        url: "{{ qcow2_image }}"
+        dest: "{{ qcow2_download_location }}image.qcow2"
+
+    - name: Get VMs
+      shell: qm list
+      register: qm_list
+
+    - name: Reset VMs
+      block:
+        - name: Stop VMs
+          shell: qm stop {{ k8s_id }}
+
+        - name: Delete existing VMs.
+          shell: qm destroy {{ k8s_id }}
+
+        - name: Reset vm list
+          shell: qm list
+          register: qm_list
+      when: k8s_reset_vm and qm_list.stdout.find(k8s_id) != -1
+
+    - name: Creating the VMs.
+      shell: >
+        qm create {{ k8s_id }}
+        --pool {{ k8s_resource_pool }}
+        --ostype "l26"
+        --name {{ k8s_hostname }}
+        --description "Kubernetes VM"
+        --agent 1
+        --cores {{ k8s_cpu }}
+        --memory {{ k8s_mem }} 
+        --net0 "virtio,bridge={{ k8s_network_bridge }}"
+        --ipconfig0 "gw={{ k8s_gateway }},ip={{ k8s_ip }}{{ k8s_subnet }}"
+        --nameserver {{ k8s_dns_server }}
+        --searchdomain {{ k8s_search_domain }}
+        --sshkeys {{ k8s_ssh_key }}
+      when: qm_list.stdout.find(k8s_id) == -1 # Only run when vm id not found
+
+    - name: Importing the qcow2 image as a disk.
+      shell: qm importdisk {{ k8s_id }} {{ qcow2_download_location }}image.qcow2 {{ k8s_stg }}
+
+    - name: Configuring the VM Hardware.
+      shell: qm set {{ k8s_id }}
+        --scsihw virtio-scsi-pci
+        --scsi0 {{ k8s_stg }}:vm-{{ k8s_id }}-disk-0
+        --ide2 {{ k8s_stg }}:cloudinit
+        --serial0 /dev/tty0
+        --boot c --bootdisk scsi0
+
+    - name: Resizing the disk.
+      shell: qm resize {{ k8s_id }} scsi0 {{ k8s_size }}
+
+    - name: Starting the VMs.
+      shell: qm start {{ k8s_id }}
+
+    - name: Waiting for the VMs to become available.
+      wait_for:
+        host: "{{ k8s_hostname }}"
+        port: 22
+        msg: "VMs did not become available after 5 minutes. Network error?"
+
+    - name: Waiting 2 minutes for for Debian to finish booting.
+      pause:
+        seconds: 120
