@@ -21,7 +21,7 @@ RUN sed -i 's|http://archive.ubuntu|http://au.archive.ubuntu|g' /etc/apt/sources
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     #
     # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
-    && apt-get -y install git iproute2 procps lsb-release \
+    && apt-get -y install git iproute2 procps lsb-release ca-certificates wget \
     #
     # Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.
     && groupadd --gid $USER_GID $USERNAME \
@@ -42,9 +42,9 @@ RUN apt-get update \
     # Kubernetes
     && apt-get install -y apt-transport-https \
     # Python
-    && apt-get install -y libssl-dev libffi-dev python-dev python-pip \
+    && apt-get install -y libssl-dev libffi-dev python-dev \
     # Kubernetes Repository
-    && curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+    && wget --quiet -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list \
     # Ansible Repository
     && apt-get install -y software-properties-common \
