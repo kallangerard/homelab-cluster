@@ -38,26 +38,28 @@ RUN sed -i 's|http://archive.ubuntu|http://au.archive.ubuntu|g' /etc/apt/sources
 
 # Packages for this repository
 
-RUN apt-get update \
+RUN apt-get update
+
     # Kubernetes
-    && apt-get install -y apt-transport-https \
+RUN apt-get install -y apt-transport-https ca-certificates curl
     # Python
-    && apt-get install -y libssl-dev libffi-dev python-dev \
-    # Kubernetes Repository
-    && wget --quiet -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
-    && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list \
+RUN apt-get install -y libssl-dev libffi-dev python-dev python-pip
+    # Kubernetes Binary
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin/kubectl
+
     # Ansible Repository
-    && apt-get install -y software-properties-common \
-    && apt-add-repository --yes --update ppa:ansible/ansible \
+RUN apt-get install -y software-properties-common
+RUN apt-add-repository --yes --update ppa:ansible/ansible
     # Update after Repositories
-    && apt-get update \
-    && apt-get install -y ansible \
+RUN apt-get update
+RUN apt-get install -y ansible
     # Kubectl
-    && apt-get install -y kubectl \
     # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get autoremove -y
+RUN apt-get clean -y
+RUN rm -rf /var/lib/apt/lists/*
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog

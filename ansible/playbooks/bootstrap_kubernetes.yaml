@@ -1,0 +1,57 @@
+---
+- name: Initialise master nodes
+  hosts: k8s_master
+  gather_facts: no
+  tasks:
+    - name: Initialise Cluster
+      become: yes
+      command: >
+        kubeadm init
+        --pod-network-cidr={{ calico_cidr }}/16
+        --control-plane-endpoint={{ inventory_hostname }}
+        --ignore-preflight-errors=all
+
+    - name: Create Kubernetes config directory
+      file:
+        path: $HOME/.kube
+        state: directory
+
+    - name: Copy admin.conf to Home Directory
+      become: yes
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/{{ ansible_user }}/.kube/config
+        owner: "{{ ansible_user | default(ansible_user_id) }}"
+        group: "{{ ansible_user | default(ansible_user_id) }}"
+        mode: 0755
+        remote_src: true
+
+    - name: Download Calico template
+      get_url:
+        url: "{{ calico_policy_url }}"
+        dest: /tmp/calico.yaml
+        owner: "{{ ansible_user | default(ansible_user_id) }}"
+        group: "{{ ansible_user | default(ansible_user_id) }}"
+        mode: 0755
+
+    - name: Modifying CIDR block for calico template
+      replace:
+        path: /tmp/calico.yaml
+        regexp: 192.168.0.0
+        replace: "{{ calico_cidr }}"
+
+    - name: Apply Calico template
+      command: kubectl apply -f /tmp/calico.yaml
+
+    - name: Retreiving the kubeadm join command.
+      become: yes
+      shell: kubeadm token create --print-join-command
+      register: kubeadm_join_command
+
+- name: Initialise worker nodes
+  hosts: k8s_nodes
+  gather_facts: no
+  tasks:
+    - name: Joining the nodes to the master.
+      become: yes
+      shell: "{{ hostvars[groups['k8s_master'][0]]['kubeadm_join_command']['stdout'] }}"

@@ -1,0 +1,6 @@
+---
+- import_playbook: playbooks/deploy_qcow2_vms.yaml
+- import_playbook: playbooks/install_base_packages.yaml
+- import_playbook: playbooks/bootstrap_kubernetes.yaml
+- import_playbook: playbooks/service_account.yaml
+- import_playbook: playbooks/deploy_metallb.yaml
