@@ -1,0 +1,18 @@
+---
+- name: Deploy MetalLB
+  hosts: k8s_master
+  gather_facts: no
+  tasks:
+    - name: Deploy MetalLB namespace
+      shell: kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/namespace.yaml
+
+    - name: Deploy MetalLB config
+      shell: kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/metallb.yaml
+
+    - name: Create MetalLB secret
+      shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+      # register: metallb_secret
+      # when: metallb_secret is not defined
+    - name: Configure MetalLB.
+      k8s:
+        definition: "{{ lookup('template', '../files/templates/MetalLB/metallb-config.yaml.j2') | from_yaml }}"

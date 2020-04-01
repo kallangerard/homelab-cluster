@@ -1,14 +1,4 @@
 ---
-# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.yml playbook.yml
-
-# - name: Initialise common roles
-#   hosts: '{{ lookup("env", "STAGE") | lower | default("development", true) }}'
-#   roles:
-#     - ssh
-#     - homelab-cluster
-#     - docker
-#     - kubernetes-common
-
 - name: Initialise master nodes
   hosts: k8s_master
   gather_facts: no
@@ -18,7 +8,7 @@
       command: >
         kubeadm init
         --pod-network-cidr={{ calico_cidr }}/16
-        --control-plane-endpoint={{ apiserver_advertise_address | default(inventory_hostname) | quote }}
+        --control-plane-endpoint={{ inventory_hostname }}
         --ignore-preflight-errors=all
 
     - name: Create Kubernetes config directory
