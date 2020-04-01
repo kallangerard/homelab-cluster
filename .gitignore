@@ -106,4 +106,6 @@ inventory.yml
 
 # ansible
 .retry
+
+.kube/config
 .devcontainer/.env.swp

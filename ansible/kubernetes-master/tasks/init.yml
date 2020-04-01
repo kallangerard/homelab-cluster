@@ -22,14 +22,3 @@
     mode: 0755
     remote_src: true
   when: init_cluster is succeeded
-
-- name: Deploy kubernetes dashboard into cluster
-  command: |
-    kubectl --kubeconfig=.kube/config \
-        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
-  register: create_result
-  until: create_result.rc == 0
-  retries: 5
-  delay: 5
-  ignore_errors: true
-  when: dashboard

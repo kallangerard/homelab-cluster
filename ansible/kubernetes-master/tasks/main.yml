@@ -4,9 +4,18 @@
 - name: Open ports needed for Kubernetes
   include: ports.yml
 
+- name: Install python requirements for k8s module
+  pip:
+    name:
+      - openshift>=0.6
+      - PyYAML>=3.11
+      - pyhelm
+      - grpcio
+    state: present
+
 - name: Reset cluster
   include_tasks: reset.yml
-  when: reset
+  when: reset | bool
 
 - name: Check cluster state
   stat:
@@ -17,6 +26,38 @@
   include_tasks: init.yml
   when: not kubeadm_ca.stat.exists
   run_once: yes
+
+# - name: Deploy kubernetes dashboard into cluster
+#   command: |
+#     kubectl --kubeconfig=.kube/config \
+#         apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+#   register: create_result
+#   until: create_result.rc == 0
+#   retries: 5
+#   delay: 5
+#   ignore_errors: true
+#   when: dashboard
+
+- name: Download dashboard config
+  get_url:
+    url: "https://raw.githubusercontent.com/kubernetes/dashboard/{{ dashboard_version }}/aio/deploy/recommended.yaml"
+    dest: /tmp/dashboard.yaml
+  when: dashboard
+
+- name: Deploy kubernetes dashboard into cluster
+  k8s:
+    state: present
+    src: /tmp/dashboard.yaml
+  when: dashboard
+
+#   command: |
+#     kubectl --kubeconfig=.kube/config \
+#         apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+#   register: create_result
+#   until: create_result.rc == 0
+#   retries: 5
+#   delay: 5
+#   ignore_errors: true
 
 - name: Copy Calico yml template
   template:
