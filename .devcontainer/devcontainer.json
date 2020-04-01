@@ -29,6 +29,7 @@
   "workspaceMount": "source=homelab-cluster,target=/workspace,type=volume",
   // Add the IDs of extensions you want installed when the container is created in the array below.
   "extensions": ["esbenp.prettier-vscode", "vscoss.vscode-ansible"],
+  "forwardPorts": [8001],
   // Remote Environment Variables
   "remoteEnv": { "ANSIBLE_STDOUT_CALLBACK": "yaml" }
 }
