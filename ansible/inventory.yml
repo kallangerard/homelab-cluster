@@ -7,19 +7,16 @@ all:
           k8s_hostname: charles
           k8s_cpu: "2"
           k8s_ip: "192.168.2.201"
-          # k8s_stg: CharlesPool
         pve2.kallan.xyz:
           k8s_id: "40101"
           k8s_hostname: kingston
           k8s_cpu: "4"
           k8s_ip: "192.168.2.221"
-          # k8s_stg: KingstonPool
         pve3.kallan.xyz:
           k8s_id: "40102"
           k8s_hostname: moss
           k8s_cpu: "4"
           k8s_ip: "192.168.2.222"
-          # k8s_stg: MossPool
       vars:
         k8s_mem: "4096"
         k8s_size: "30G"
