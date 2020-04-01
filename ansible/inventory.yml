@@ -24,7 +24,7 @@ all:
         k8s_mem: "4096"
         k8s_size: "30G"
         k8s_stg: local-lvm
-        k8s_reset_vm: false
+        k8s_reset_vm: yes
 
     k8s_cluster:
       children:
@@ -62,6 +62,7 @@ all:
     # Network Bridges
     k8s_network_bridge: "vmbr0"
 
+    calico_cidr: "172.16.0.0"
     calico_policy_url: "https://docs.projectcalico.org/v3.10/manifests/calico.yaml"
 
     k8s_dashboard_url: "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml"

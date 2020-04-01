@@ -1,5 +1,0 @@
----
-# tasks file for ssh
-- name: Configure SSH
-  become: yes
-  include: nopasswd.yml

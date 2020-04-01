@@ -16,10 +16,6 @@
         url: "{{ qcow2_image }}"
         dest: "{{ qcow2_download_location }}image.qcow2"
 
-    - name: Get VMs
-      shell: qm list
-      register: qm_list
-
     - name: Reset VMs
       block:
         - name: Stop VMs
@@ -27,11 +23,6 @@
 
         - name: Delete existing VMs.
           shell: qm destroy {{ k8s_id }}
-
-        - name: Reset vm list
-          shell: qm list
-          register: qm_list
-      when: k8s_reset_vm and qm_list.stdout.find(k8s_id) != -1
 
     - name: Creating the VMs.
       shell: >
@@ -48,7 +39,6 @@
         --nameserver {{ k8s_dns_server }}
         --searchdomain {{ k8s_search_domain }}
         --sshkeys {{ k8s_ssh_key }}
-      when: qm_list.stdout.find(k8s_id) == -1 # Only run when vm id not found
 
     - name: Importing the qcow2 image as a disk.
       shell: qm importdisk {{ k8s_id }} {{ qcow2_download_location }}image.qcow2 {{ k8s_stg }}
@@ -73,6 +63,6 @@
         port: 22
         msg: "VMs did not become available after 5 minutes. Network error?"
 
-    - name: Waiting 2 minutes for for Debian to finish booting.
-      pause:
-        seconds: 120
+    # - name: Waiting 2 minutes for for Debian to finish booting.
+    #   pause:
+    #     seconds: 120
