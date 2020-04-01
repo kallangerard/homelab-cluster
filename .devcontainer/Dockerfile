@@ -21,7 +21,7 @@ RUN sed -i 's|http://archive.ubuntu|http://au.archive.ubuntu|g' /etc/apt/sources
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     #
     # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
-    && apt-get -y install git iproute2 procps lsb-release \
+    && apt-get -y install git iproute2 procps lsb-release ca-certificates wget \
     #
     # Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.
     && groupadd --gid $USER_GID $USERNAME \
@@ -48,6 +48,7 @@ RUN apt-get install -y libssl-dev libffi-dev python-dev python-pip
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin/kubectl
+
     # Ansible Repository
 RUN apt-get install -y software-properties-common
 RUN apt-add-repository --yes --update ppa:ansible/ansible
