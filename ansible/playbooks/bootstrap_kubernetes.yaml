@@ -25,7 +25,8 @@
         group: "{{ ansible_user | default(ansible_user_id) }}"
         mode: 0755
         remote_src: true
-
+      
+      # Install Calico
     - name: Download Calico template
       get_url:
         url: "{{ calico_policy_url }}"
@@ -47,6 +48,31 @@
       become: yes
       shell: kubeadm token create --print-join-command
       register: kubeadm_join_command
+
+    # Install Helm
+    - name: Create temporary download directory
+      tempfile:
+        state: directory
+      register: helm_download
+
+    - name: Download Helm Binary
+      get_url:
+        url: https://get.helm.sh/helm-{{helm_version}}-linux-amd64.tar.gz
+        dest: "{{ helm_download.path }}/helm.gz"
+      
+    - name: Unpack Binary
+      unarchive:
+        src: "{{ helm_download.path }}/helm.gz"
+        dest: "{{ helm_download.path }}"
+        remote_src: yes
+
+    - name: Move binary to path
+      become: yes
+      copy:
+        src: "{{ helm_download.path }}/linux-amd64/helm"
+        dest: /usr/local/bin/helm
+        mode: "0755"
+        remote_src: yes    
 
 - name: Initialise worker nodes
   hosts: k8s_nodes

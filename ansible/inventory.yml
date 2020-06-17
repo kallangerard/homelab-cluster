@@ -66,3 +66,8 @@ all:
     k8s_user_name: kallan
 
     metallb_ipv4_range: "192.168.2.240-192.168.2.250"
+
+    k8s_nfs_hostname: "192.168.2.100"
+    k8s_nfs_path: "/volume1/kubernetesPersistentVolume"
+
+    helm_version: v3.2.4

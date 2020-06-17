@@ -95,8 +95,8 @@
         name: "{{ item }}"
         extra_args: --upgrade
       loop:
-        - openshift
         - kubernetes
+        - openshift
         - pyyaml
         - requests
 
