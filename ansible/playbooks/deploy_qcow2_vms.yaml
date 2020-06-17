@@ -17,6 +17,7 @@
         dest: "{{ qcow2_download_location }}image.qcow2"
 
     - name: Reset VMs
+      ignore_errors: yes
       block:
         - name: Stop VMs
           shell: qm stop {{ k8s_id }}
@@ -27,16 +28,17 @@
     - name: Creating the VMs.
       shell: >
         qm create {{ k8s_id }}
-        --pool {{ k8s_resource_pool }}
-        --ostype "l26"
-        --name {{ k8s_hostname }}
-        --description "Kubernetes VM"
         --agent 1
         --cores {{ k8s_cpu }}
-        --memory {{ k8s_mem }} 
-        --net0 "virtio,bridge={{ k8s_network_bridge }}"
+        --description "Kubernetes VM"
         --ipconfig0 "gw={{ k8s_gateway }},ip={{ k8s_ip }}{{ k8s_subnet }}"
+        --memory {{ k8s_mem }} 
+        --name {{ k8s_hostname }}
         --nameserver {{ k8s_dns_server }}
+        --net0 "virtio,bridge={{ k8s_network_bridge }}"
+        --onboot 1
+        --ostype "l26"
+        --pool {{ k8s_resource_pool }}
         --searchdomain {{ k8s_search_domain }}
         --sshkeys {{ k8s_ssh_key }}
 
