@@ -2,6 +2,35 @@ all:
   children:
     proxmox_servers:
       hosts:
+        pve0.kallan.xyz:
+          k8s_id: "40103"
+          k8s_hostname: parkwood
+          k8s_cpu: "4"
+          k8s_ip: "192.168.2.223"
+          tank_disks:
+            - "/dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JZKK" #Seagate Ironwolf 4TB
+            - "/dev/disk/by-id/ata-ST4000VN008-2DR166_ZDH3MNR2" #Seagate Ironwolf 4TB
+          tank_datasets:
+            - appdata
+          mergerfs_data_disks:
+            - {
+                name: /mnt/data1,
+                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JHTS-part1,
+                fs: xfs,
+              } #Seagate Ironwolf 4TB sde
+            - {
+                name: /mnt/data2,
+                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306F6RS-part1,
+                fs: xfs,
+              } #Seagate Ironwolf 4TB sdf
+            - {
+                name: /mnt/data3,
+                source: /dev/disk/by-id/ata-WDC_WD30EFRX-68EUZN0_WD-WCC4N7ZKL7SX-part1,
+                fs: xfs,
+              } #sdc 3TB populated
+            - { name: /mnt/data4, source: /dev/disk/by-id/, fs: xfs } #8TB WDC shucked on order
+          mergerfs_parity_disks:
+            - { name: /mnt/parity1, source: /dev/disk/by-id/, fs: xfs } #8TB WDC shucked on order
         pve1.kallan.xyz:
           k8s_id: "4011"
           k8s_hostname: charles
@@ -32,6 +61,7 @@ all:
           hosts:
             kingston.kallan.xyz:
             moss.kallan.xyz:
+            parkwood.kallan.xyz:
       vars:
         ansible_user: debian
 
@@ -45,7 +75,8 @@ all:
     qcow2_download_location: "/tmp/"
 
     k8s_resource_pool: Kubernetes
-    k8s_ssh_key: "/root/.ssh/xyz.kallan.pve.kubernetes.pub"
+    k8s_ssh_key_local: "~/.ssh/xyz.kallan.pve.kubernetes.pub"
+    k8s_ssh_key_remote: "/root/.ssh/xyz.kallan.pve.kubernetes.pub"
 
     # Subnet Sizes
     k8s_subnet: "/24"
@@ -58,6 +89,7 @@ all:
 
     # Network Bridges
     k8s_network_bridge: "vmbr0"
+    k8s_cidr: "192.168.2.0"
 
     calico_cidr: "172.16.0.0"
     calico_policy_url: "https://docs.projectcalico.org/v3.10/manifests/calico.yaml"
@@ -67,7 +99,7 @@ all:
 
     metallb_ipv4_range: "192.168.2.240-192.168.2.250"
 
-    k8s_nfs_hostname: "192.168.2.100"
-    k8s_nfs_path: "/volume1/kubernetesPersistentVolume"
+    k8s_nfs_hostname: "192.168.2.176"
+    k8s_nfs_path: "/tank/appdata"
 
     helm_version: v3.2.4

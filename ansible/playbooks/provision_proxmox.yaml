@@ -1,0 +1,22 @@
+---
+- hosts: proxmox_servers
+  gather_facts: no
+  tasks:
+    - name: Remove Proxmox Enterprise sources
+      file:
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+        state: absent
+
+    - name: Add free repository to sources
+      apt_repository:
+        repo: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+        state: present
+        filename: pve-no-subscription
+
+      # lineinfile:
+      #     path: /etc/apt/sources.list/sources.list.d/pve-no-subscription.list
+      #     create: yes
+      #     state: present # not required. choices: absent;present. Whether the line should be there or not.
+      #     regexp: "^deb http:\/\/download\.proxmox\.com/debian/pve buster pve-no-subscription"
+      #     line: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+    -

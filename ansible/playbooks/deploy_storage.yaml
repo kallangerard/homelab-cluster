@@ -1,0 +1,39 @@
+---
+- hosts: pve0.kallan.xyz
+  gather_facts: false
+  tasks:
+    - name: Check if Tank zpool exists
+      command: zpool list -H -o name tank # Display pool tank, scripted mode (-H), name header only (-o name)
+      register: zpool_list
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Create Mirror Zpool Tank
+      command: >-
+        zpool create tank
+        -o ashift=12
+        mirror
+        {{ tank_disks[0] }}
+        {{ tank_disks[1] }}
+      when: zpool_list.stderr is search("cannot open 'tank'") # Only run when zpool list stderr cannot open 'tank'
+
+    - name: Enable compression on Tank pool
+      command: zfs set compression=lz4 tank
+
+    - name: Create ZFS Datasets
+      command: zfs create tank/{{ item }}
+      loop: "{{ tank_datasets }}"
+      register: result
+      failed_when: "'dataset already exists' not in result.stderr"
+      changed_when: result.rc == 0
+
+    - name: Install nfs server
+      apt:
+        name: nfs-kernel-server
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Enable zfs nfs shares
+      command: "zfs set sharenfs='rw=@{{ k8s_cidr }}{{ k8s_subnet }}' tank/{{ item }}"
+      loop: "{{ tank_datasets }}"
