@@ -13,10 +13,16 @@
         state: present
         filename: pve-no-subscription
 
-      # lineinfile:
-      #     path: /etc/apt/sources.list/sources.list.d/pve-no-subscription.list
-      #     create: yes
-      #     state: present # not required. choices: absent;present. Whether the line should be there or not.
-      #     regexp: "^deb http:\/\/download\.proxmox\.com/debian/pve buster pve-no-subscription"
-      #     line: deb http://download.proxmox.com/debian/pve buster pve-no-subscription
-    -
+    - name: Remove License Prompt
+      replace:
+        path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+        regexp: "data.status \\!== \\'Active\\'"
+        replace: "false"
+        backup: yes
+      register: license_check
+
+    - name: restart pveproxy
+      service:
+        name: pveproxy
+        state: restarted
+      when: license_check.changed
