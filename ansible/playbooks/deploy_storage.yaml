@@ -34,6 +34,23 @@
         update_cache: yes
         cache_valid_time: 3600
 
-    - name: Enable zfs nfs shares
+    - name: Set zfs properties on datasets
+      command: >-
+        zfs set
+        xattr=sa
+        dnodesize=auto
+        atime=off
+        tank/{{ item }}
+      loop: "{{ tank_datasets }}"
+
+    - name: Set zfs nfs shares
       command: "zfs set sharenfs='rw=@{{ k8s_cidr }}{{ k8s_subnet }}' tank/{{ item }}"
       loop: "{{ tank_datasets }}"
+
+    - name: Enable zfs nfs shares
+      command: "zfs share tank/{{ item }}"
+      loop: "{{ tank_datasets }}"
+# Set nobody:nogroup
+# Set chmod 777
+## Enable Firewall rule for NFSserver, 2049 TCP
+# IP Address Alias as destination
