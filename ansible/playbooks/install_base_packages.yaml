@@ -70,17 +70,15 @@
       become: yes
       apt_repository:
         repo: "{{ item }}"
+        update_cache: yes
       loop:
         - "deb [arch=amd64] https://download.docker.com/linux/debian buster stable"
         - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
-    - name: Update repositories
-      become: yes
-      apt:
-        update_cache: yes
-
     - name: Install kubeadm, kubelet and kubectl
       become: yes
+      update_cache: yes
+      cache_valid_time: 3600
       apt:
         name: "{{ item }}"
       loop:
