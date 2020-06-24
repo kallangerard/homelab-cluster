@@ -7,6 +7,14 @@ all:
           k8s_hostname: parkwood
           k8s_cpu: "4"
           k8s_ip: "192.168.2.223"
+          server_resource_pool: "fileserver"
+          server_resource_pool_comment: "File Servers"
+          server_id: "300"
+          server_hostname: beaufort
+          server_cpu: "4"
+          server_mem: "4096"
+          server_ip: "192.168.2.100"
+          resource_pool:
           tank_disks:
             - "/dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JZKK" #Seagate Ironwolf 4TB
             - "/dev/disk/by-id/ata-ST4000VN008-2DR166_ZDH3MNR2" #Seagate Ironwolf 4TB
@@ -15,22 +23,25 @@ all:
           mergerfs_data_disks:
             - {
                 name: /mnt/data1,
-                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JHTS-part1,
+                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JHTS,
                 fs: xfs,
+                key: "1",
               } #Seagate Ironwolf 4TB sde
             - {
                 name: /mnt/data2,
-                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306F6RS-part1,
+                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306F6RS,
                 fs: xfs,
+                key: "2",
               } #Seagate Ironwolf 4TB sdf
             - {
                 name: /mnt/data3,
-                source: /dev/disk/by-id/ata-WDC_WD30EFRX-68EUZN0_WD-WCC4N7ZKL7SX-part1,
+                source: /dev/disk/by-id/ata-WDC_WD30EFRX-68EUZN0_WD-WCC4N7ZKL7SX,
                 fs: xfs,
+                key: "3",
               } #sdc 3TB populated
-            - { name: /mnt/data4, source: /dev/disk/by-id/, fs: xfs } #8TB WDC shucked on order
+            # - { name: /mnt/data4, source: /dev/disk/by-id/, fs: xfs, key: "4"} #8TB WDC shucked on order
           mergerfs_parity_disks:
-            - { name: /mnt/parity1, source: /dev/disk/by-id/, fs: xfs } #8TB WDC shucked on order
+            # - { name: /mnt/parity1, source: /dev/disk/by-id/, fs: xfs, key: "5"} #8TB WDC shucked on order
         pve1.kallan.xyz:
           k8s_id: "4011"
           k8s_hostname: charles
@@ -50,7 +61,6 @@ all:
         k8s_mem: "4096"
         k8s_size: "30G"
         k8s_stg: local-lvm
-        k8s_reset_vm: yes
 
     k8s_cluster:
       children:
