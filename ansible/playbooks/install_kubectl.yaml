@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Install required packages
+      become: yes
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - gnupg2
+
+    - name: Adding the necessary GPG keys.
+      become: yes
+      apt_key:
+        url: "{{ item }}"
+      loop:
+        - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+
+    - name: Adding the necessary Apt repositories.
+      become: yes
+      apt_repository:
+        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        update_cache: yes
+
+    - name: Install kubernetes user packages
+      become: yes
+      apt:
+        name: kubectl
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Check Helm Installation
+      stat:
+        path: /usr/local/bin/helm
+      register: helm_status
+
+    - name: Install Helm
+      block:
+        - name: Create temporary download directory
+          tempfile:
+            state: directory
+          register: helm_download
+
+        - name: Download Helm Binary
+          get_url:
+            url: https://get.helm.sh/helm-{{helm_version}}-linux-amd64.tar.gz
+            dest: "{{ helm_download.path }}/helm.gz"
+
+        - name: Unpack Binary
+          unarchive:
+            src: "{{ helm_download.path }}/helm.gz"
+            dest: "{{ helm_download.path }}"
+            remote_src: yes
+
+        - name: Move binary to path
+          become: yes
+          copy:
+            src: "{{ helm_download.path }}/linux-amd64/helm"
+            dest: /usr/local/bin/helm
+            mode: "0755"
+            remote_src: yes
+      when: helm_status.stat.exists == False
