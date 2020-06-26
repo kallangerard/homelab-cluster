@@ -1,0 +1,51 @@
+---
+- name: Wait for nodes to become ready for connection
+  wait_for_connection:
+    # delay: 30 # seconds until begin checking
+
+- name: Wait for automatic updates to finish
+  shell: |
+    timeout=$(($(date +%s) + 600))
+
+    while pgrep apt > /dev/null; do
+      
+        time=$(date +%s)
+
+        if [[ $time -ge $timeout ]];
+        then
+            exit 1
+        fi
+
+        sleep 1
+    done;
+    exit 0
+
+- name: Perform package upgrade
+  become: yes
+  apt:
+    name: "*"
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest
+
+- name: Install base packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: 3600
+  loop:
+    - curl
+    - qemu-guest-agent
+    - ntp
+
+- name: Remove dhcp from eth0
+  become: yes
+  lineinfile:
+    path: /etc/network/interfaces
+    line: iface eth0 inet dhcp
+    state: absent
+
+- name: Reboot OS
+  become: yes
+  reboot:

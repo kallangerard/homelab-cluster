@@ -44,7 +44,7 @@
       loop: "{{ tank_datasets }}"
 
     - name: Set zfs nfs shares
-      command: "zfs set sharenfs='rw=@{{ k8s_cidr }}{{ k8s_subnet }}' tank/{{ item }}"
+      command: "zfs set sharenfs='rw=@{{ node_cidr }}' tank/{{ item }}"
       loop: "{{ tank_datasets }}"
 
     - name: Enable zfs nfs shares

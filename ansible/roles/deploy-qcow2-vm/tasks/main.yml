@@ -1,0 +1,72 @@
+---
+- name: Delegate to hypervisor
+  delegate_to: "{{ hypervisor }}"
+  block:
+    - name: Get resource pools
+      shell: pvesh ls /pools
+      register: pvesh_pools
+      run_once: yes
+
+    - name: Creating a resource pool
+      shell: pvesh create /pools -poolid "{{ node_resource_pool }}" --Comment "{{ node_resource_pool_comment }}"
+      when: pvesh_pools.stdout.find(node_resource_pool) == -1
+      run_once: yes
+
+    - name: Downloading the Debian qcow2 image.
+      get_url:
+        url: "{{ qcow2_image }}"
+        dest: "{{ qcow2_download_location }}image.qcow2"
+
+    - name: Copy public key to proxmox host
+      copy:
+        src: "{{ node_ssh_key_local }}"
+        dest: "{{ node_ssh_key_remote }}"
+
+    - name: Reset VMs
+      ignore_errors: yes
+      block:
+        - name: Stop VMs
+          shell: qm stop {{ node_id }}
+
+        - name: Delete existing VMs.
+          shell: qm destroy {{ node_id }}
+
+    - name: Creating the VMs.
+      shell: >
+        qm create {{ node_id }}
+        --agent 1
+        --cores {{ node_cpu }}
+        --memory {{ node_mem }} 
+        --name {{ inventory_hostname }}
+        --nameserver {{ node_dns_server }}
+        --onboot 1
+        --ostype "l26"
+        --pool {{ node_resource_pool }}
+        --searchdomain {{ node_search_domain }}
+        --sshkeys {{ node_ssh_key_remote }}
+        --boot c 
+        --bootdisk scsi0
+        --scsihw virtio-scsi-pci
+        --serial0 /dev/tty0
+        --net0 "virtio,bridge={{ node_network_bridge }}"
+        --ipconfig0 "gw={{ node_gateway }},ip={{ node_ip }}{{ node_subnet }}"
+    - name: Importing the qcow2 image as a disk.
+      shell: qm importdisk {{ node_id }} {{ qcow2_download_location }}image.qcow2 {{ node_stg }}
+
+    - name: Configuring the VM Hardware.
+      shell: >
+        qm set {{ node_id }}
+        --scsi0 {{ node_stg }}:vm-{{ node_id }}-disk-0
+        --ide2 {{ node_stg }}:cloudinit
+
+    - name: Resizing the disk.
+      shell: qm resize {{ node_id }} scsi0 {{ node_disk_size }}
+
+    - name: Starting the VMs.
+      shell: qm start {{ node_id }}
+
+    - name: Waiting for the VMs to become available.
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        msg: "VMs did not become available after 5 minutes. Network error?"

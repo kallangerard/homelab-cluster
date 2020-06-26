@@ -1,0 +1,14 @@
+---
+- name: Add default Helm Repo
+  command: helm repo add stable https://kubernetes-charts.storage.googleapis.com
+
+- name: Update Helm Repo
+  command: helm repo update
+
+- name: Install Helm Chart for NFS Provisioner
+  shell: >
+    helm install nfs-{{ item.name }} 
+    stable/nfs-client-provisioner
+    --set nfs.server={{ item.hostname }}
+    --set nfs.path={{ item.path }}
+  loop: "{{ nfs_paths }}"

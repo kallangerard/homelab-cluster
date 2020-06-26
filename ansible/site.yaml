@@ -1,6 +1,21 @@
 ---
-- import_playbook: playbooks/deploy_qcow2_vms.yaml
-- import_playbook: playbooks/install_base_packages.yaml
+- hosts: node_master
+  gather_facts: no
+  roles:
+    - deploy-qcow2-vm
+
+- hosts: node_master
+  gather_facts: no
+  tasks:
+    - include: tasks/install_base_packages.yaml
+
 - import_playbook: playbooks/bootstrap_kubernetes.yaml
-- import_playbook: playbooks/deploy_metallb.yaml
-- import_playbook: playbooks/service_account.yaml
+  vars:
+    init_node: charles.kallan.xyz
+    join_nodes: node_master
+
+- hosts: node_master
+  run_once: yes
+  gather_facts: no
+  tasks:
+    - include: tasks/deploy_nfs.yaml
