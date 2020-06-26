@@ -3,18 +3,6 @@ all:
     proxmox_servers:
       hosts:
         pve0.kallan.xyz:
-          k8s_id: "40103"
-          k8s_hostname: parkwood
-          k8s_cpu: "4"
-          k8s_ip: "192.168.2.223"
-          server_resource_pool: "fileserver"
-          server_resource_pool_comment: "File Servers"
-          server_id: "300"
-          server_hostname: beaufort
-          server_cpu: "4"
-          server_mem: "4096"
-          server_ip: "192.168.2.100"
-          resource_pool:
           tank_disks:
             - "/dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JZKK" #Seagate Ironwolf 4TB
             - "/dev/disk/by-id/ata-ST4000VN008-2DR166_ZDH3MNR2" #Seagate Ironwolf 4TB
@@ -43,73 +31,66 @@ all:
           mergerfs_parity_disks:
             # - { name: /mnt/parity1, source: /dev/disk/by-id/, fs: xfs, key: "5"} #8TB WDC shucked on order
         pve1.kallan.xyz:
-          k8s_id: "4011"
-          k8s_hostname: charles
-          k8s_cpu: "2"
-          k8s_ip: "192.168.2.201"
         pve2.kallan.xyz:
-          k8s_id: "40101"
-          k8s_hostname: kingston
-          k8s_cpu: "4"
-          k8s_ip: "192.168.2.221"
         pve3.kallan.xyz:
-          k8s_id: "40102"
-          k8s_hostname: moss
-          k8s_cpu: "4"
-          k8s_ip: "192.168.2.222"
-      vars:
-        k8s_mem: "4096"
-        k8s_size: "30G"
-        k8s_stg: local-lvm
 
-    k8s_cluster:
+    nodes:
       children:
-        k8s_master:
+        node_master:
           hosts:
             charles.kallan.xyz:
-        k8s_nodes:
-          hosts:
+              node_id: "4011"
+              node_ip: "192.168.2.201"
+              hypervisor: pve1.kallan.xyz
             kingston.kallan.xyz:
+              node_id: "4012"
+              node_ip: "192.168.2.202"
+              hypervisor: pve2.kallan.xyz
             moss.kallan.xyz:
-            parkwood.kallan.xyz:
+              node_id: "4013"
+              node_ip: "192.168.2.203"
+              hypervisor: pve3.kallan.xyz
+          vars:
+            ansible_user: debian
+            node_cpu: "4"
+            node_mem: "4096"
+            node_disk_size: "30G"
+            node_stg: local-lvm
+            node_resource_pool: Kubernetes
+            node_resource_pool_comment: "Kubernetes Control Plane"
+            k3s_endpoint: kubernetes.kallan.xyz
+        storage:
+          hosts:
+            beaufort.kallan.xyz:
+              node_id: "300"
+              node_resource_pool: "Fileservers"
+              node_resource_pool_comment: "File Servers"
+              node_hostname: beaufort
+              node_cpu: "4"
+              node_mem: "4096"
+              node_ip: "192.168.2.100"
+              resource_pool: storage
+              hypervisor: pve0.kallan.xyz
       vars:
-        ansible_user: debian
+        node_search_domain: kallan.xyz
 
-  vars:
-    # Vars for production go here
-    ansible_ssh_common_args: "-o ServerAliveInterval=5 -o StrictHostKeyChecking=no"
+        qcow2_image: "https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2"
+        qcow2_download_location: "/tmp/"
 
-    k8s_search_domain: kallan.xyz
+        node_ssh_key_local: "~/.ssh/xyz.kallan.pve.kubernetes.pub"
+        node_ssh_key_remote: "/root/.ssh/xyz.kallan.pve.kubernetes.pub"
 
-    qcow2_image: "https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2"
-    qcow2_download_location: "/tmp/"
+        # Subnet Sizes
+        node_subnet: "/24"
 
-    k8s_resource_pool: Kubernetes
-    k8s_ssh_key_local: "~/.ssh/xyz.kallan.pve.kubernetes.pub"
-    k8s_ssh_key_remote: "/root/.ssh/xyz.kallan.pve.kubernetes.pub"
+        # Network
+        node_network_bridge: "vmbr0"
+        node_gateway: "192.168.2.254"
+        node_dns_server: "192.168.2.254"
+        node_cidr: "192.168.2.0/24"
+        metallb_ipv4_range: "192.168.2.240-192.168.2.250"
 
-    # Subnet Sizes
-    k8s_subnet: "/24"
-
-    # Network Gateway
-    k8s_gateway: "192.168.2.254"
-
-    # DNS Servers
-    k8s_dns_server: "192.168.2.254"
-
-    # Network Bridges
-    k8s_network_bridge: "vmbr0"
-    k8s_cidr: "192.168.2.0"
-
-    calico_cidr: "172.16.0.0"
-    calico_policy_url: "https://docs.projectcalico.org/v3.10/manifests/calico.yaml"
-
-    k8s_dashboard_url: "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml"
-    k8s_user_name: kallan
-
-    metallb_ipv4_range: "192.168.2.240-192.168.2.250"
-
-    k8s_nfs_hostname: "192.168.2.176"
-    k8s_nfs_path: "/tank/appdata"
-
-    helm_version: v3.2.4
+        nfs_paths:
+          - { name: appdata, hostname: beaufort.kallan.xyz, path: /tank/appdata }
+        helm_version: v3.2.4
+        ansible_ssh_common_args: "-o ServerAliveInterval=5 -o StrictHostKeyChecking=no"
