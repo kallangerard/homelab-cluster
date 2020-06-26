@@ -1,0 +1,17 @@
+---
+- name: Add default Helm Repo
+  command: helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+
+- name: Update Helm Repo
+  command: helm repo update
+
+- name: Create Namespace for Rancher
+  command: kubectl create namespace cattle-system
+
+# TODO: TLS cert-manager
+
+- name: Install Rancher with Helm
+  command: >
+    helm install rancher rancher-latest/rancher
+    --namespace cattle-system
+    --set hostname={{ k3s_endpoint }}
