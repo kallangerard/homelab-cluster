@@ -9,6 +9,10 @@
   shell: >
     helm install nfs-{{ item.name }} 
     stable/nfs-client-provisioner
+    --set storageClass.name=nfs-{{ item.name }}
     --set nfs.server={{ item.hostname }}
     --set nfs.path={{ item.path }}
+    {% if item.default == True %}
+      --set storageClass.defaultClass=true
+    {% endif %}
   loop: "{{ nfs_paths }}"

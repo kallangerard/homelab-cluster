@@ -6,8 +6,12 @@
   command: helm repo update
 
 - name: Create Namespace for Rancher
-  command: kubectl create namespace cattle-system
-
+  block:
+    - command: kubectl get namespaces
+      register: namespaces
+      
+    - command: kubectl create namespace cattle-system
+      when: namespaces.stdout is not search("cattle-system")
 # TODO: TLS cert-manager
 
 - name: Install Rancher with Helm
@@ -15,3 +19,4 @@
     helm install rancher rancher-latest/rancher
     --namespace cattle-system
     --set hostname={{ k3s_endpoint }}
+    --set tls=external

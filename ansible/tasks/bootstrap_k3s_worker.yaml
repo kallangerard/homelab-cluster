@@ -1,0 +1,12 @@
+---
+- name: Join Worker Nodes
+  become: yes
+  shell:
+    cmd: >
+      curl -sfL https://get.k3s.io | 
+      INSTALL_K3S_EXEC="
+      --server https://{{ k3s_endpoint }}:6443
+      --token {{ lookup('env', 'K3S_AGENT_TOKEN') }}
+      "
+      sh -
+    warn: no
