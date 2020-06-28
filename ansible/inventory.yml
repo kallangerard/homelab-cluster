@@ -36,29 +36,44 @@ all:
 
     nodes:
       children:
-        node_master:
-          hosts:
-            charles.kallan.xyz:
-              node_id: "4011"
-              node_ip: "192.168.2.201"
-              hypervisor: pve1.kallan.xyz
-            kingston.kallan.xyz:
-              node_id: "4012"
-              node_ip: "192.168.2.202"
-              hypervisor: pve2.kallan.xyz
-            moss.kallan.xyz:
-              node_id: "4013"
-              node_ip: "192.168.2.203"
-              hypervisor: pve3.kallan.xyz
+        kubernetes:
+          children:
+            node_master:
+              hosts:
+                charles.kallan.xyz:
+                  node_id: "4011"
+                  node_ip: "192.168.2.201"
+                  hypervisor: pve1.kallan.xyz
+                kingston.kallan.xyz:
+                  node_id: "4012"
+                  node_ip: "192.168.2.202"
+                  hypervisor: pve2.kallan.xyz
+                moss.kallan.xyz:
+                  node_id: "4013"
+                  node_ip: "192.168.2.203"
+                  hypervisor: pve3.kallan.xyz
+              vars:
+                node_cpu: "4"
+                node_mem_min: "4096"
+                node_mem_max: "8192"
+            node_worker:
+              hosts:
+                parkwood.kallan.xyz:
+                  node_id: "4014"
+                  node_ip: "192.168.2.204"
+                  hypervisor: pve0.kallan.xyz
+              vars:
+                node_cpu: "2"
+                node_mem_min: "2048"
+                node_mem_max: "4096"
           vars:
             ansible_user: debian
-            node_cpu: "4"
-            node_mem: "4096"
             node_disk_size: "30G"
             node_stg: local-lvm
             node_resource_pool: Kubernetes
             node_resource_pool_comment: "Kubernetes Control Plane"
             k3s_endpoint: kubernetes.kallan.xyz
+
         storage:
           hosts:
             beaufort.kallan.xyz:
@@ -91,6 +106,11 @@ all:
         metallb_ipv4_range: "192.168.2.240-192.168.2.250"
 
         nfs_paths:
-          - { name: appdata, hostname: beaufort.kallan.xyz, path: /tank/appdata }
+          - {
+              name: appdata,
+              hostname: pve0.kallan.xyz,
+              path: /tank/appdata,
+              default: true,
+            }
         helm_version: v3.2.4
         ansible_ssh_common_args: "-o ServerAliveInterval=5 -o StrictHostKeyChecking=no"
