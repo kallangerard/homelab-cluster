@@ -1,18 +1,33 @@
 ---
-- name: Add default Helm Repo
-  command: helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 
-- name: Update Helm Repo
-  command: helm repo update
+- name: Install the CustomResourceDefinition resources for cert-manager
+  command: kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml
 
-- name: Create Namespace for Rancher
+- name: Create Namespaces
   block:
     - command: kubectl get namespaces
       register: namespaces
       
-    - command: kubectl create namespace cattle-system
-      when: namespaces.stdout is not search("cattle-system")
-# TODO: TLS cert-manager
+    - command: kubectl create namespace {{ item }}
+      when: namespaces.stdout is not search(item)
+      loop:
+        - cert-manager
+        - cattle-system
+
+- name: Add Helm Repos
+  command: helm repo add {{ item }}
+  loop: 
+    - jetstack https://charts.jetstack.io
+    - rancher-latest https://releases.rancher.com/server-charts/latest
+
+- name: Update Helm Repo
+  command: helm repo update
+
+- name: Install cert-manager with Helm
+  command: >
+    helm install cert-manager jetstack/cert-manager
+    --namespace cert-manager
+    --version v0.15.0
 
 - name: Install Rancher with Helm
   command: >

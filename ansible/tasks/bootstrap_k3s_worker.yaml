@@ -1,12 +1,25 @@
 ---
+- name: Waiting for the first node to become available.
+  wait_for:
+    host: "{{ first_master }}"
+    port: 6443
+    msg: "Node did not become available after 5 minutes. Network error?"
+
+- name: Get Token for Master
+  become: yes
+  shell: cat /var/lib/rancher/k3s/server/node-token
+  register: master_token
+  delegate_to: "{{ first_master }}"
+
 - name: Join Worker Nodes
   become: yes
   shell:
     cmd: >
       curl -sfL https://get.k3s.io | 
       INSTALL_K3S_EXEC="
+      agent
       --server https://{{ k3s_endpoint }}:6443
-      --token {{ lookup('env', 'K3S_AGENT_TOKEN') }}
+      --token {{ master_token['stdout'] }}
       "
       sh -
     warn: no

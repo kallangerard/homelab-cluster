@@ -16,6 +16,7 @@
     - include: tasks/bootstrap_k3s_master.yaml
   
 - hosts: node_worker
+  gather_facts: no
   tasks:
     - include: tasks/bootstrap_k3s_worker.yaml
 

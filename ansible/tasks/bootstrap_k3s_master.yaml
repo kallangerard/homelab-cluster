@@ -8,12 +8,23 @@
       --cluster-init
       --write-kubeconfig-mode 644
       --tls-san {{ k3s_endpoint }}
-      --token {{ lookup('env', 'K3S_TOKEN') }}
-      --agent-token {{ lookup('env', 'K3S_AGENT_TOKEN')}}
       "
       sh -
     warn: no
-  when: inventory_hostname == ansible_play_batch[0]
+  # when: inventory_hostname == ansible_play_batch[0]
+  when: inventory_hostname == first_master
+
+- name: Waiting for the first node to become available.
+  wait_for:
+    host: "{{ first_master }}"
+    port: 6443
+    msg: "Node did not become available after 5 minutes. Network error?"
+
+- name: Get Token for Master
+  become: yes
+  shell: cat /var/lib/rancher/k3s/server/node-token
+  register: master_token
+  when: inventory_hostname == first_master
 
 - name: Join Other Master Nodes
   become: yes
@@ -24,11 +35,12 @@
       --server https://{{ k3s_endpoint }}:6443
       --write-kubeconfig-mode 644
       --tls-san {{ k3s_endpoint }}
-      --token {{ lookup('env', 'K3S_TOKEN') }}
+      --token {{ hostvars[first_master]['master_token']['stdout'] }}
       "
       sh -
     warn: no
-  when: inventory_hostname != ansible_play_batch[0]
+  # when: inventory_hostname != ansible_play_batch[0]
+  when: inventory_hostname != first_master
 
 - name: Create Kubernetes config directory
   file:

@@ -73,6 +73,7 @@ all:
             node_resource_pool: Kubernetes
             node_resource_pool_comment: "Kubernetes Control Plane"
             k3s_endpoint: kubernetes.kallan.xyz
+            first_master: charles.kallan.xyz
 
         storage:
           hosts:
