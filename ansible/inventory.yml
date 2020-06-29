@@ -2,38 +2,7 @@ all:
   children:
     proxmox_servers:
       hosts:
-        pve0.kallan.xyz:
-          tank_disks:
-            - "/dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JZKK" #Seagate Ironwolf 4TB
-            - "/dev/disk/by-id/ata-ST4000VN008-2DR166_ZDH3MNR2" #Seagate Ironwolf 4TB
-          tank_datasets:
-            - appdata
-          mergerfs_data_disks:
-            - {
-                name: /mnt/data1,
-                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306JHTS,
-                fs: xfs,
-                key: "1",
-              } #Seagate Ironwolf 4TB sde
-            - {
-                name: /mnt/data2,
-                source: /dev/disk/by-id/ata-ST4000VN000-1H4168_Z306F6RS,
-                fs: xfs,
-                key: "2",
-              } #Seagate Ironwolf 4TB sdf
-            - {
-                name: /mnt/data3,
-                source: /dev/disk/by-id/ata-WDC_WD30EFRX-68EUZN0_WD-WCC4N7ZKL7SX,
-                fs: xfs,
-                key: "3",
-              } #sdc 3TB populated
-            # - { name: /mnt/data4, source: /dev/disk/by-id/, fs: xfs, key: "4"} #8TB WDC shucked on order
-          mergerfs_parity_disks:
-            # - { name: /mnt/parity1, source: /dev/disk/by-id/, fs: xfs, key: "5"} #8TB WDC shucked on order
-        pve1.kallan.xyz:
-        pve2.kallan.xyz:
-        pve3.kallan.xyz:
-
+        pve[0-3].kallan.xyz:   
     nodes:
       children:
         kubernetes:
