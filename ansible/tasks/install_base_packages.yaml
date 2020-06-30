@@ -36,8 +36,9 @@
     cache_valid_time: 3600
   loop:
     - curl
-    - qemu-guest-agent
+    - nfs-common
     - ntp
+    - qemu-guest-agent
 
 - name: Remove dhcp from eth0
   become: yes

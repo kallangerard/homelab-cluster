@@ -36,7 +36,8 @@
         qm create {{ node_id }}
         --agent 1
         --cores {{ node_cpu }}
-        --memory {{ node_mem }} 
+        --balloon {{ node_mem_min }}
+        --memory {{ node_mem_max }} 
         --name {{ inventory_hostname }}
         --nameserver {{ node_dns_server }}
         --onboot 1

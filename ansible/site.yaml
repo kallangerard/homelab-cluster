@@ -1,21 +1,28 @@
 ---
-- hosts: node_master
+- hosts: node_master:node_worker
   gather_facts: no
   roles:
     - deploy-qcow2-vm
 
-- hosts: node_master
+- hosts: node_master:node_worker
   gather_facts: no
   tasks:
     - include: tasks/install_base_packages.yaml
 
-- import_playbook: playbooks/bootstrap_kubernetes.yaml
-  vars:
-    init_node: charles.kallan.xyz
-    join_nodes: node_master
+- hosts: node_master
+  order: sorted
+  gather_facts: no
+  tasks:
+    - include: tasks/bootstrap_k3s_master.yaml
+  
+- hosts: node_worker
+  gather_facts: no
+  tasks:
+    - include: tasks/bootstrap_k3s_worker.yaml
 
 - hosts: node_master
   run_once: yes
   gather_facts: no
   tasks:
+    - include: tasks/deploy_rancher.yaml
     - include: tasks/deploy_nfs.yaml
