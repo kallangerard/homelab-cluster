@@ -24,5 +24,4 @@
   run_once: yes
   gather_facts: no
   tasks:
-    - include: tasks/deploy_rancher.yaml
     - include: tasks/deploy_nfs.yaml

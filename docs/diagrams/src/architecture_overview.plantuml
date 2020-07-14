@@ -1,0 +1,44 @@
+@startuml Architecture Overview
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+' skinparam nodesep 10
+' skinparam ranksep 10
+center header K3S HA CLUSTER
+
+
+node pve0.kallan.xyz {
+  card parkwood.kallan.xyz {
+    component [parkwood-agent]
+  }
+}
+node pve1.kallan.xyz {
+  card charles.kallan.xyz {
+    component [charles-master]
+    component [charles-agent]
+  }
+}
+node pve2.kallan.xyz {
+  card kingston.kallan.xyz {
+    component [kingston-master]
+    component [kingston-agent]
+  }
+}
+node pve3.kallan.xyz {
+  card core.kallan.xyz {
+    database Postgres
+  }
+}
+
+[charles-master] -down-> Postgres
+[kingston-master] -down-> Postgres
+
+(api loadbalancer)
+
+(api loadbalancer) --down- [charles-agent]
+(api loadbalancer) --down- [kingston-agent]
+(api loadbalancer) --down- [parkwood-agent]
+
+
+
+
+@enduml

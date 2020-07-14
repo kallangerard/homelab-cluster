@@ -2,7 +2,7 @@ all:
   children:
     proxmox_servers:
       hosts:
-        pve[0-3].kallan.xyz:   
+        pve[0:3].kallan.xyz:
     nodes:
       children:
         kubernetes:
@@ -17,14 +17,12 @@ all:
                   node_id: "4012"
                   node_ip: "192.168.2.202"
                   hypervisor: pve2.kallan.xyz
-                moss.kallan.xyz:
-                  node_id: "4013"
-                  node_ip: "192.168.2.203"
-                  hypervisor: pve3.kallan.xyz
               vars:
                 node_cpu: "4"
                 node_mem_min: "4096"
                 node_mem_max: "8192"
+                POSTGRES_PASSWORD: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+                k3s_datastore_endpoint: "postgres://kubernetes:{{ POSTGRES_PASSWORD }}@core.kallan.xyz:5432/k3s?sslmode=disable"
             node_worker:
               hosts:
                 parkwood.kallan.xyz:
@@ -36,34 +34,22 @@ all:
                 node_mem_min: "2048"
                 node_mem_max: "4096"
           vars:
-            ansible_user: debian
-            node_disk_size: "30G"
-            node_stg: local-lvm
             node_resource_pool: Kubernetes
             node_resource_pool_comment: "Kubernetes Control Plane"
             k3s_endpoint: kubernetes.kallan.xyz
             first_master: charles.kallan.xyz
-
-        storage:
-          hosts:
-            beaufort.kallan.xyz:
-              node_id: "300"
-              node_resource_pool: "Fileservers"
-              node_resource_pool_comment: "File Servers"
-              node_hostname: beaufort
-              node_cpu: "4"
-              node_mem: "4096"
-              node_ip: "192.168.2.100"
-              resource_pool: storage
-              hypervisor: pve0.kallan.xyz
       vars:
         node_search_domain: kallan.xyz
 
-        qcow2_image: "https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2"
+        qcow2_image: "https://cdimage.debian.org/cdimage/openstack/archive/10.4.1-20200515/debian-10.4.1-20200515-openstack-amd64.qcow2"
         qcow2_download_location: "/tmp/"
 
         node_ssh_key_local: "~/.ssh/xyz.kallan.pve.kubernetes.pub"
         node_ssh_key_remote: "/root/.ssh/xyz.kallan.pve.kubernetes.pub"
+
+        ansible_user: debian
+        node_disk_size: "30G"
+        node_stg: local-lvm
 
         # Subnet Sizes
         node_subnet: "/24"

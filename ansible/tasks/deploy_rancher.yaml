@@ -31,7 +31,7 @@
 
 - name: Install Rancher with Helm
   command: >
-    helm install rancher rancher-latest/rancher
+    helm upgrade --install rancher rancher-latest/rancher
     --namespace cattle-system
     --set hostname={{ k3s_endpoint }}
     --set tls=external

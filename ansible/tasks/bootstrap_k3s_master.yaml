@@ -1,16 +1,31 @@
 ---
+- name: Create temporary download directory
+  tempfile:
+    state: directory
+  register: downloads
+
+- name: Download k3s script
+  get_url:
+    url: "https://raw.githubusercontent.com/rancher/k3s/master/install.sh"
+    dest: "{{ downloads.path }}/install.sh"
+
+- name: Make k3s script executable
+  file:
+    path: "{{ downloads.path }}/install.sh"
+    mode: "0744"
+
 - name: Initialise First Node
   become: yes
   shell:
     cmd: >
-      curl -sfL https://get.k3s.io | 
-      INSTALL_K3S_EXEC="
-      --cluster-init
-      --write-kubeconfig-mode 644
-      --tls-san {{ k3s_endpoint }}
-      "
-      sh -
+      INSTALL_K3S_VERSION="v1.17.7+k3s1"
+      ./install.sh
+      --datastore-endpoint='{{ k3s_datastore_endpoint }}'
+      --write-kubeconfig-mode='644'
+      --advertise-address={{ node_ip }}
+      --tls-san='{{ k3s_endpoint }}'
     warn: no
+    chdir: "{{ downloads.path }}"
   # when: inventory_hostname == ansible_play_batch[0]
   when: inventory_hostname == first_master
 
@@ -19,6 +34,7 @@
     host: "{{ first_master }}"
     port: 6443
     msg: "Node did not become available after 5 minutes. Network error?"
+  when: inventory_hostname != first_master
 
 - name: Get Token for Master
   become: yes
@@ -30,16 +46,16 @@
   become: yes
   shell:
     cmd: >
-      curl -sfL https://get.k3s.io | 
-      INSTALL_K3S_EXEC="
-      --server https://{{ k3s_endpoint }}:6443
-      --write-kubeconfig-mode 644
-      --tls-san {{ k3s_endpoint }}
-      --token {{ hostvars[first_master]['master_token']['stdout'] }}
-      "
-      sh -
+      INSTALL_K3S_VERSION="v1.17.7+k3s1"
+      ./install.sh
+      --server='https://{{ k3s_endpoint }}:6443'
+      --datastore-endpoint='{{ k3s_datastore_endpoint }}'
+      --write-kubeconfig-mode='644'
+      --advertise-address={{ node_ip }}
+      --tls-san='{{ k3s_endpoint }}'
+      --token='{{ hostvars[first_master]['master_token']['stdout'] }}'
     warn: no
-  # when: inventory_hostname != ansible_play_batch[0]
+    chdir: "{{ downloads.path }}"
   when: inventory_hostname != first_master
 
 - name: Create Kubernetes config directory
@@ -54,29 +70,24 @@
     dest: /home/{{ ansible_user }}/.kube/config
     owner: "{{ ansible_user | default(ansible_user_id) }}"
     group: "{{ ansible_user | default(ansible_user_id) }}"
-    mode: 0644
+    mode: "0644"
     remote_src: true
-
-- name: Create temporary download directory
-  tempfile:
-    state: directory
-  register: helm_download
 
 - name: Download Helm Binary
   get_url:
     url: https://get.helm.sh/helm-{{helm_version}}-linux-amd64.tar.gz
-    dest: "{{ helm_download.path }}/helm.gz"
+    dest: "{{ downloads.path }}/helm.gz"
 
 - name: Unpack Binary
   unarchive:
-    src: "{{ helm_download.path }}/helm.gz"
-    dest: "{{ helm_download.path }}"
+    src: "{{ downloads.path }}/helm.gz"
+    dest: "{{ downloads.path }}"
     remote_src: yes
 
 - name: Move binary to path
   become: yes
   copy:
-    src: "{{ helm_download.path }}/linux-amd64/helm"
+    src: "{{ downloads.path }}/linux-amd64/helm"
     dest: /usr/local/bin/helm
     mode: "0755"
     remote_src: yes

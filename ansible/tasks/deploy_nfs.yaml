@@ -7,7 +7,7 @@
 
 - name: Install Helm Chart for NFS Provisioner
   shell: >
-    helm install nfs-{{ item.name }} 
+    helm upgrade --install nfs-{{ item.name }} 
     stable/nfs-client-provisioner
     --set storageClass.name=nfs-{{ item.name }}
     --set nfs.server={{ item.hostname }}

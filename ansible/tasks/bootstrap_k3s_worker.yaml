@@ -10,16 +10,29 @@
   shell: cat /var/lib/rancher/k3s/server/node-token
   register: master_token
   delegate_to: "{{ first_master }}"
+- name: Create temporary download directory
+  tempfile:
+    state: directory
+  register: downloads
+
+- name: Download k3s script
+  get_url:
+    url: "https://raw.githubusercontent.com/rancher/k3s/master/install.sh"
+    dest: "{{ downloads.path }}/install.sh"
+
+- name: Make k3s script executable
+  file:
+    path: "{{ downloads.path }}/install.sh"
+    mode: "0744"
 
 - name: Join Worker Nodes
   become: yes
   shell:
     cmd: >
-      curl -sfL https://get.k3s.io | 
-      INSTALL_K3S_EXEC="
+      INSTALL_K3S_VERSION="v1.17.7+k3s1"
+      ./install.sh
       agent
       --server https://{{ k3s_endpoint }}:6443
       --token {{ master_token['stdout'] }}
-      "
-      sh -
     warn: no
+    chdir: "{{ downloads.path }}"
